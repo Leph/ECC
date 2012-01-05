@@ -1,8 +1,12 @@
 %{
     #include <stdio.h>
     #include <string.h>
+    #include "ecc.h"
+
     int yylex ();
     int yyerror ();
+
+    function_table_t function_table;
 %}
 
 %token<str> IDENTIFIER CONSTANT
@@ -198,7 +202,16 @@ int main (int argc, char *argv[]) {
 	fprintf (stderr, "%s: error: no input file\n", *argv);
 	return 1;
     }
+
+    function_table.size = 0;
+
     yyparse ();
     free (file_name);
+
+    long i;
+    for (i=0;i<function_table.size;i++) {
+        printf("%s\n", function_table.table[i].name);
+    }
+
     return 0;
 }

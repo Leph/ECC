@@ -5,7 +5,7 @@ CC=gcc
 
 all:backend
 
-backend:backend.c scanner_backend.c
+backend:backend.c scanner_backend.c ecc.c
 	$(CC) $(CFLAGS) -o $@ $^
 
 backend.c:backend.y
@@ -17,3 +17,4 @@ backend.c:backend.y
 clean:
 	rm -f backend.c scanner_backend.c
 	rm -f backend.tab.h backend
+

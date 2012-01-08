@@ -1,21 +1,19 @@
 D[0-9]
 L[a-zA-Z_]
+BLANK[ \r\t\n\t\f]
 
 %{
-#include <stdio.h>
-#include <string.h>
-#include "backend.tab.h"
-void count();
-int comment ();
-int check_type ();
-char inputline[1000];
+    #include <stdio.h>
+    #include <string.h>
+    #include "backend.tab.h"
+
+    void count();
 %}
-
-%option yylineno
-
+%option noinput 
+%option nounput
 %%
 
-"/*"		{ comment(); }
+"/*"([^*]|"*"[^*/])*"*/"		{ count(); }
 "//".*          { count(); }
  "float "	{ count(); return(FLOAT); }
  "goto "	{ count(); return(GOTO); }
@@ -24,8 +22,8 @@ char inputline[1000];
  "return "	{ count(); return(RETURN); }
  "void "	{ count(); return(VOID); }
 
-{L}({L}|{D})*	{ count(); yylval.str = strdup (yytext); return(IDENTIFIER); }
-{D}+    	{ count(); yylval.str=strdup(yytext); return(CONSTANT); }
+{L}({L}|{D})*	{ count(); yylval.str = strdup(yytext); return(IDENTIFIER); }
+{D}+    	{ count(); yylval.str = strdup(yytext); return(CONSTANT); }
 
 "+="	{ count(); return(ADD_ASSIGN); }
 "-="	{ count(); return(SUB_ASSIGN); }
@@ -40,7 +38,7 @@ char inputline[1000];
 "{"	{ count(); return('{'); }
 "}"	{ count(); return('}'); }
 ","	{ count(); return(','); }
-":"     { count(); return(':'); }
+":"   { count(); return(':'); }
 "="	{ count(); return('='); }
 "("	{ count(); return('('); }
 ")"	{ count(); return(')'); }
@@ -55,46 +53,29 @@ char inputline[1000];
 "^"	{ count(); return('^'); }
 "|"	{ count(); return('|'); }
 
-[ \t\v\n\f]	{ count(); }
+{BLANK}	{ count(); }
 .	{ /* ignore bad characters */ }
 
 %%
 
 int yywrap() {
-  return 1;
+    return 1;
 }
 
-
-int comment() {
-	char c, c1;
-
-loop:
-	while ((c = input()) != '*' && c != 0);
-	if ((c1 = input()) != '/' && c != 0) {
-		unput(c1);
-		goto loop;
-	}
-	return 0;
-}
-
-
-int column = 0;
-int line = 0;
+int column = 1;
+int line = 1;
 
 void count() {
-	int i;
-
-	for (i = 0; yytext[i] != '\0'; i++) {
-		if (yytext[i] == '\n') {
-			column = 0;
-			line++;
-		}
-		else if (yytext[i] == '\t')
-			column += 8 - (column % 8);
-		else
-			column++;
-	}
-	// ECHO;
+    int i;
+    for (i = 0; yytext[i] != '\0'; i++) {
+        if (yytext[i] == '\n') {
+            column = 0;
+            line++;
+        }
+        else if (yytext[i] == '\t')
+            column += 8 - (column % 8);
+        else
+            column++;
+    }
 }
-
 

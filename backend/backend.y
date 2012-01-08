@@ -1,12 +1,11 @@
 %{
     #include <stdio.h>
+    #include <stdlib.h>
     #include <string.h>
     #include "ecc.h"
 
-    int yylex ();
-    int yyerror ();
-
-    function_table_t function_table;
+    int yylex();
+    int yyerror();
 %}
 
 %token<str> IDENTIFIER CONSTANT
@@ -77,19 +76,15 @@ assignment_operator
 | SUB_ASSIGN
 ;
 
-declaration
-: type_name declarator_list ';'
-;
-
-declarator_list
-: declarator
-| declarator_list ',' declarator
-;
-
 type_name
 : INT
 | VOID
 | FLOAT
+;
+
+array_declarator
+: '[' CONSTANT ']'
+| array_declarator '[' CONSTANT ']'
 ;
 
 declarator
@@ -101,14 +96,36 @@ declarator
 | declarator '(' ')'
 ;
 
+declarator2
+: IDENTIFIER
+| IDENTIFIER array_declarator
+;
+
+declarator_list
+: declarator
+| declarator_list ',' declarator
+;
+
+parameter_declaration
+: type_name declarator
+;
 
 parameter_list
 : parameter_declaration
 | parameter_list ',' parameter_declaration
 ;
 
-parameter_declaration
-: type_name declarator
+labeled_statement
+: IDENTIFIER ':' statement
+;
+
+declaration
+: type_name declarator_list ';'
+;
+
+declaration_list
+: declaration
+| declaration_list declaration
 ;
 
 statement
@@ -117,21 +134,6 @@ statement
 | expression_statement
 | selection_statement
 | jump_statement
-;
-
-labeled_statement
-: IDENTIFIER ':' statement
-;
-
-compound_statement
-: '{' '}'
-| '{' statement_list '}'
-| '{' declaration_list statement_list '}'
-;
-
-declaration_list
-: declaration
-| declaration_list declaration
 ;
 
 statement_list
@@ -154,9 +156,18 @@ jump_statement
 | RETURN expression ';'
 ;
 
-program
-: external_declaration
-| program external_declaration
+compound_statement
+: '{' '}'
+| '{' statement_list '}'
+| '{' declaration_list statement_list '}'
+;
+
+function_prototype
+: type_name IDENTIFIER '(' ')'
+;
+
+function_definition
+: type_name declarator compound_statement
 ;
 
 external_declaration
@@ -164,54 +175,47 @@ external_declaration
 | declaration
 ;
 
-function_definition
-: type_name declarator compound_statement
+program
+: external_declaration
+| program external_declaration
 ;
 
 %%
-#include <stdio.h>
 
 extern char yytext[];
 extern int column;
-extern int yylineno;
-extern FILE *yyin;
+extern int line;
+extern FILE* yyin;
 
-char *file_name = NULL;
+char* file_name = NULL;
 
 int yyerror (char *s) {
     fflush (stdout);
-    fprintf (stderr, "%s:%d:%d: %s\n", file_name, yylineno, column, s);
-    return 0;
+    fprintf (stderr, "%s:%d:%d: %s\n", file_name, line, column, s);
+    return EXIT_FAILURE;
 }
 
 
 int main (int argc, char *argv[]) {
     FILE *input = NULL;
-    if (argc==2) {
-	input = fopen (argv[1], "r");
-	file_name = strdup (argv[1]);
-	if (input) {
-	    yyin = input;
-	}
-	else {
-	    fprintf (stderr, "Could not open %s\n", argv[1]);
-	    return 1;
-	}
+    if (argc == 2) {
+        input = fopen (argv[1], "r");
+        file_name = strdup(argv[1]);
+        if (input) {
+            yyin = input;
+        }
+        else {
+            fprintf (stderr, "Could not open %s\n", argv[1]);
+            return EXIT_FAILURE;
+        }
+        free(file_name);
     }
     else {
-	fprintf (stderr, "%s: error: no input file\n", *argv);
-	return 1;
+        fprintf (stderr, "%s: error: no input file\n", *argv);
+        return EXIT_FAILURE;
     }
 
-    function_table.size = 0;
+    yyparse();
 
-    yyparse ();
-    free (file_name);
-
-    long i;
-    for (i=0;i<function_table.size;i++) {
-        printf("%s\n", function_table.table[i].name);
-    }
-
-    return 0;
+    return EXIT_SUCCESS;
 }

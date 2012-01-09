@@ -1,7 +1,7 @@
 #ifndef ECC_H
 #define ECC_H
 
-enum type_t {VOID_T, INT_T, FLOAT_T, ARRAY_T, REF_T};
+enum type_t {VOID_T, INT_T, FLOAT_T, ARRAY_T, REF_T, LABEL_T};
 typedef enum type_t type_t;
 
 struct function_t

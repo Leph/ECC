@@ -42,16 +42,16 @@ argument_expression_list
 | argument_expression_list ',' primary_expression
 ;
 
+unary_operator
+: '+'
+| '-'
+;
+
 unary_expression
 : postfix_expression
 | INC_OP unary_expression
 | DEC_OP unary_expression
 | unary_operator unary_expression
-;
-
-unary_operator
-: '+'
-| '-'
 ;
 
 comparison_expression
@@ -64,16 +64,62 @@ comparison_expression
 | primary_expression NE_OP primary_expression
 ;
 
-expression
-: unary_expression assignment_operator unary_expression
-| unary_expression
-;
-
 assignment_operator
 : '='
 | MUL_ASSIGN
 | ADD_ASSIGN
 | SUB_ASSIGN
+;
+
+selection_statement
+: IF '(' comparison_expression ')' statement
+;
+
+jump_statement
+: GOTO IDENTIFIER ';'
+| RETURN ';'
+| RETURN expression ';'
+;
+
+expression
+: unary_expression assignment_operator unary_expression
+| unary_expression
+;
+
+expression_statement
+: ';'
+| expression ';'
+;
+
+labeled_statement
+: IDENTIFIER ':'
+;
+
+statement
+: labeled_statement
+| expression_statement
+| selection_statement
+| jump_statement
+;
+
+statement_list
+: statement
+| statement_list statement
+;
+
+declaration
+: type_name variable_declarator_list ';'
+;
+
+declaration_list
+: declaration
+| declaration_list declaration
+;
+
+compound_statement
+: '{' '}'
+| '{' statement_list '}'
+| '{' declaration_list statement_list '}'
 ;
 
 type_name
@@ -87,92 +133,38 @@ array_declarator
 | array_declarator '[' CONSTANT ']'
 ;
 
-declarator
-: IDENTIFIER
-| '(' declarator ')'
-| declarator '[' CONSTANT ']'
-| declarator '[' ']'
-| declarator '(' parameter_list ')'
-| declarator '(' ')'
-;
-
-declarator2
+variable_declarator
 : IDENTIFIER
 | IDENTIFIER array_declarator
 ;
 
-declarator_list
-: declarator
-| declarator_list ',' declarator
+variable_declarator_list
+: variable_declarator
+| variable_declarator ',' variable_declarator_list
 ;
 
 parameter_declaration
-: type_name declarator
+: type_name variable_declarator
 ;
 
-parameter_list
+parameter_declaration_list
 : parameter_declaration
-| parameter_list ',' parameter_declaration
-;
-
-labeled_statement
-: IDENTIFIER ':' statement
-;
-
-declaration
-: type_name declarator_list ';'
-;
-
-declaration_list
-: declaration
-| declaration_list declaration
-;
-
-statement
-: labeled_statement
-| compound_statement
-| expression_statement
-| selection_statement
-| jump_statement
-;
-
-statement_list
-: statement
-| statement_list statement
-;
-
-expression_statement
-: ';'
-| expression ';'
-;
-
-selection_statement
-: IF '(' comparison_expression ')' statement
-;
-
-jump_statement
-: GOTO IDENTIFIER ';'
-| RETURN ';'
-| RETURN expression ';'
-;
-
-compound_statement
-: '{' '}'
-| '{' statement_list '}'
-| '{' declaration_list statement_list '}'
+| parameter_declaration ',' parameter_declaration_list
 ;
 
 function_prototype
 : type_name IDENTIFIER '(' ')'
+| type_name IDENTIFIER '(' parameter_declaration_list ')'
 ;
 
 function_definition
-: type_name declarator compound_statement
+: function_prototype compound_statement
 ;
 
 external_declaration
 : function_definition
-| declaration
+| type_name variable_declarator_list ';'
+| function_prototype ';'
 ;
 
 program

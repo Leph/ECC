@@ -1,6 +1,10 @@
 #ifndef ECC_H
 #define ECC_H
 
+/*
+ * Structure definition
+ */
+
 enum type_t {VOID_T, INT_T, FLOAT_T, ARRAY_T, REF_T, LABEL_T};
 typedef enum type_t type_t;
 
@@ -19,6 +23,10 @@ struct function_table_t
     int size;
 };
 typedef struct function_table_t function_table_t;
+
+/*
+ * Fonctions definitions
+ */
 
 function_table_t* create_function_table();
 void delete_function_table(function_table_t* t);

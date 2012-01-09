@@ -2,23 +2,28 @@
     #include <stdio.h>
     #include <stdlib.h>
     #include <string.h>
+
     #include "ecc.h"
 
     int yylex();
     int yyerror();
+
+    function_table_t* function_table = NULL;
 %}
 
-%token<str> IDENTIFIER CONSTANT
-%token INC_OP DEC_OP LE_OP GE_OP EQ_OP NE_OP
-%token AND_OP OR_OP
-%token SUB_ASSIGN MUL_ASSIGN ADD_ASSIGN
-%token TYPE_NAME
 %union {
 	char *str;
-}
-%token INT FLOAT VOID
+        type_t type;
+};
 
-%token  IF ELSE GOTO RETURN
+%token<str> IDENTIFIER
+%token CONSTANT
+%token INC_OP DEC_OP LE_OP GE_OP EQ_OP NE_OP
+%token SUB_ASSIGN MUL_ASSIGN ADD_ASSIGN
+%token INT FLOAT VOID
+%token IF ELSE GOTO RETURN
+
+%type<type> type_name
 
 %start program
 %%
@@ -123,9 +128,9 @@ compound_statement
 ;
 
 type_name
-: INT
-| VOID
-| FLOAT
+: INT { $$ = INT_T; }
+| VOID { $$ = VOID_T; }
+| FLOAT { $$ = FLOAT_T; }
 ;
 
 array_declarator
@@ -186,7 +191,6 @@ int yyerror (char *s) {
     fprintf (stderr, "%s:%d:%d: %s\n", file_name, line, column, s);
     return EXIT_FAILURE;
 }
-
 
 int main (int argc, char *argv[]) {
     FILE *input = NULL;

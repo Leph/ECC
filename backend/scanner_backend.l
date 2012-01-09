@@ -5,6 +5,8 @@ BLANK[ \r\t\n\t\f]
 %{
     #include <stdio.h>
     #include <string.h>
+    #include "ecc.h"
+
     #include "backend.tab.h"
 
     void count();

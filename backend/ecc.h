@@ -61,6 +61,15 @@ struct function_table_t
 };
 typedef struct function_table_t function_table_t;
 
+/**
+ * variables table
+ */
+
+struct variable_table_t
+{
+}
+typedef struct variable_table_t variable_table_t;
+
 /*
  * Fonctions definitions
  */

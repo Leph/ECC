@@ -113,6 +113,7 @@ statement
 | expression_statement
 | selection_statement
 | jump_statement
+| compound_statement
 ;
 
 statement_list

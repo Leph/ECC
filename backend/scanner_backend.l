@@ -25,7 +25,8 @@ BLANK[ \r\t\n\t\f]
  "void "	{ count(); return(VOID); }
 
 {L}({L}|{D})*	{ count(); yylval.identifier = strdup(yytext); return(IDENTIFIER); }
-{D}+    	{ count(); yylval.constant = atoi(yytext); return(CONSTANT); }
+{D}+"."{D}*    	{ count(); yylval.constant_float = atof(yytext); return(CONSTANT_FLOAT); }
+{D}+    	{ count(); yylval.constant_int = atoi(yytext); return(CONSTANT_INT); }
 
 "+="	{ count(); return(ADD_ASSIGN); }
 "-="	{ count(); return(SUB_ASSIGN); }

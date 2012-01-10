@@ -13,14 +13,20 @@
 
 %union {
 	char* identifier;
-        int constant;
+        int constant_int;
+        float constant_float;
         type_t type;
         variable_t* variable;
         function_t* function;
+        variable_table_t* variable_table;
+        unary_operation_t* unary_operation;
+        operation_t* operation;
+        arguments_list_t* arguments_list;
 };
 
 %token<identifier> IDENTIFIER
-%token<constant> CONSTANT
+%token<constant_int> CONSTANT_INT
+%token<constant_float> CONSTANT_FLOAT
 %token INC_OP DEC_OP LE_OP GE_OP EQ_OP NE_OP
 %token SUB_ASSIGN MUL_ASSIGN ADD_ASSIGN
 %token INT FLOAT VOID
@@ -32,39 +38,53 @@
 %type<variable> parameter_declaration
 %type<function> parameter_declaration_list
 %type<function> function_prototype
+%type<variable_table> variable_declarator_list
+%type<variable_table> declaration
+%type<variable_table> declaration_list
+%type<unary_operation> primary_expression
+%type<unary_operation> unary_expression
+%type<operation> expression
+%type<arguments_list> argument_expression_list
+%type<arguments_list> array_expression_list
+
+
 
 %start program
 %%
 
 primary_expression
-: IDENTIFIER
-| CONSTANT
-| IDENTIFIER '(' ')'
-| IDENTIFIER '(' argument_expression_list ')'
-| IDENTIFIER INC_OP
-| IDENTIFIER DEC_OP
+: IDENTIFIER { value_t* v = create_value_identifier($1); $$ = create_unary_operation_nop(v); }
+| CONSTANT_INT { value_t* v = create_value_const_int($1); $$ = create_unary_operation_nop(v); }
+| CONSTANT_FLOAT { value_t* v = create_value_const_float($1); $$ = create_unary_operation_nop(v); }
+| IDENTIFIER INC_OP { value_t* v = create_value_identifier($1); $$ = create_unary_operation_inc(v); }
+| IDENTIFIER DEC_OP { value_t* v = create_value_identifier($1); $$ = create_unary_operation_dec(v); }
+| IDENTIFIER '(' ')' { value_t* v = create_value_identifier($1); arguments_list_t* l = create_arguments_list(); $$ = create_unary_operation_func(v, l); }
+| IDENTIFIER '(' argument_expression_list ')' { value_t* v = create_value_identifier($1); $$ = create_unary_operation_func(v, $3); }
+| IDENTIFIER array_expression_list { value_t* v = create_value_identifier($1); $$ = create_unary_operation_array(v, $2); }
 ;
 
-postfix_expression
-: primary_expression
-| postfix_expression '[' expression ']'
+array_expression_list
+: expression { $$ = create_arguments_list(); arguments_list_add_arg($$, $1); }
+| array_expression_list '[' expression ']' { $$ = $1; arguments_list_add_arg($$, $3); }
 ;
 
 argument_expression_list
-: primary_expression
-| argument_expression_list ',' primary_expression
-;
-
-unary_operator
-: '+'
-| '-'
+: expression { $$ = create_arguments_list(); arguments_list_add_arg($$, $1); }
+| argument_expression_list ',' expression { $$ = $1; arguments_list_add_arg($$, $3); }
 ;
 
 unary_expression
-: postfix_expression
-| INC_OP unary_expression
-| DEC_OP unary_expression
-| unary_operator unary_expression
+: primary_expression
+;
+
+expression
+: '+' unary_expression
+| '-' unary_expression
+| unary_expression '=' unary_expression
+| unary_expression MUL_ASSIGN unary_expression
+| unary_expression ADD_ASSIGN unary_expression
+| unary_expression SUB_ASSIGN unary_expression
+| unary_expression
 ;
 
 comparison_expression
@@ -77,13 +97,6 @@ comparison_expression
 | primary_expression NE_OP primary_expression
 ;
 
-assignment_operator
-: '='
-| MUL_ASSIGN
-| ADD_ASSIGN
-| SUB_ASSIGN
-;
-
 selection_statement
 : IF '(' comparison_expression ')' statement
 ;
@@ -92,11 +105,6 @@ jump_statement
 : GOTO IDENTIFIER ';'
 | RETURN ';'
 | RETURN expression ';'
-;
-
-expression
-: unary_expression assignment_operator unary_expression
-| unary_expression
 ;
 
 expression_statement
@@ -122,18 +130,18 @@ statement_list
 ;
 
 declaration
-: type_name variable_declarator_list ';'
+: type_name variable_declarator_list ';' { $$ = $2; variable_table_set_all_type($$, $1); }
 ;
 
 declaration_list
-: declaration
-| declaration_list declaration
+: declaration { $$ = $1; }
+| declaration_list declaration { $$ = variable_table_merge($1, $2); }
 ;
 
 compound_statement
 : '{' '}'
 | '{' statement_list '}'
-| '{' declaration_list statement_list '}'
+| '{' declaration_list statement_list '}' { variable_table_print($2); }
 ;
 
 type_name
@@ -143,8 +151,8 @@ type_name
 ;
 
 array_declarator
-: '[' CONSTANT ']' { $$ = create_variable(); variable_add_dim($$, $2); }
-| array_declarator '[' CONSTANT ']' { $$ = $1; variable_add_dim($$, $3); }
+: '[' CONSTANT_INT ']' { $$ = create_variable(); variable_add_dim($$, $2); }
+| array_declarator '[' CONSTANT_INT ']' { $$ = $1; variable_add_dim($$, $3); }
 ;
 
 variable_declarator
@@ -153,8 +161,8 @@ variable_declarator
 ;
 
 variable_declarator_list
-: variable_declarator
-| variable_declarator ',' variable_declarator_list
+: variable_declarator { $$ = create_variable_table(); variable_table_add_var($$, $1); }
+| variable_declarator_list ',' variable_declarator { $$ = $1; variable_table_add_var($$, $3); }
 ;
 
 parameter_declaration
@@ -172,7 +180,7 @@ function_prototype
 ;
 
 function_definition
-: function_prototype compound_statement {function_print($1); printf("\n");}
+: function_prototype compound_statement { function_print($1); }
 ;
 
 external_declaration
@@ -183,7 +191,7 @@ external_declaration
 
 program
 : external_declaration
-| program external_declaration
+| external_declaration program
 ;
 
 %%

@@ -12,18 +12,26 @@
 %}
 
 %union {
-	char *str;
+	char* identifier;
+        int constant;
         type_t type;
+        variable_t* variable;
+        function_t* function;
 };
 
-%token<str> IDENTIFIER
-%token CONSTANT
+%token<identifier> IDENTIFIER
+%token<constant> CONSTANT
 %token INC_OP DEC_OP LE_OP GE_OP EQ_OP NE_OP
 %token SUB_ASSIGN MUL_ASSIGN ADD_ASSIGN
 %token INT FLOAT VOID
 %token IF ELSE GOTO RETURN
 
 %type<type> type_name
+%type<variable> array_declarator
+%type<variable> variable_declarator
+%type<variable> parameter_declaration
+%type<function> parameter_declaration_list
+%type<function> function_prototype
 
 %start program
 %%
@@ -134,13 +142,13 @@ type_name
 ;
 
 array_declarator
-: '[' CONSTANT ']'
-| array_declarator '[' CONSTANT ']'
+: '[' CONSTANT ']' { $$ = create_variable(); variable_add_dim($$, $2); }
+| array_declarator '[' CONSTANT ']' { $$ = $1; variable_add_dim($$, $3); }
 ;
 
 variable_declarator
-: IDENTIFIER
-| IDENTIFIER array_declarator
+: IDENTIFIER { $$ = create_variable(); variable_set_name($$, $1); }
+| IDENTIFIER array_declarator { $$ = $2; variable_set_name($$, $1);}
 ;
 
 variable_declarator_list
@@ -149,21 +157,21 @@ variable_declarator_list
 ;
 
 parameter_declaration
-: type_name variable_declarator
+: type_name variable_declarator { $$ = $2; variable_set_type($$, $1); }
 ;
 
 parameter_declaration_list
-: parameter_declaration
-| parameter_declaration ',' parameter_declaration_list
+: parameter_declaration { $$ = create_function(); function_add_param($$, $1); }
+| parameter_declaration ',' parameter_declaration_list { $$ = $3; function_add_param($$, $1);}
 ;
 
 function_prototype
-: type_name IDENTIFIER '(' ')'
-| type_name IDENTIFIER '(' parameter_declaration_list ')'
+: type_name IDENTIFIER '(' ')' { $$ = create_function(); function_set_name($$, $2); function_set_return($$, $1); }
+| type_name IDENTIFIER '(' parameter_declaration_list ')' { $$ = $4; function_set_name($$, $2); function_set_return($$, $1); }
 ;
 
 function_definition
-: function_prototype compound_statement
+: function_prototype compound_statement {function_print($1); printf("\n");}
 ;
 
 external_declaration
@@ -215,3 +223,4 @@ int main (int argc, char *argv[]) {
 
     return EXIT_SUCCESS;
 }
+

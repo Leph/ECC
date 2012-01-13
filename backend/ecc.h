@@ -61,7 +61,7 @@ void unary_operation_print(unary_operation_t* op);
  * Operations
  */
 
-enum operation_type_t {NOP_T, ADD_T, SUB_T, MULT_T};
+enum operation_type_t {NOP_T, MINUS_T, PLUS_T, ASSIGN_T, ADD_T, SUB_T, MULT_T};
 typedef enum operation_type_t operation_type_t;
 
 struct operation_t
@@ -73,6 +73,9 @@ struct operation_t
 typedef struct operation_t operation_t;
 
 operation_t* create_operation_nop(unary_operation_t* op1);
+operation_t* create_operation_minus(unary_operation_t* op1);
+operation_t* create_operation_plus(unary_operation_t* op1);
+operation_t* create_operation_assign(unary_operation_t* op1, unary_operation_t* op2);
 operation_t* create_operation_add(unary_operation_t* op1, unary_operation_t* op2);
 operation_t* create_operation_sub(unary_operation_t* op1, unary_operation_t* op2);
 operation_t* create_operation_mult(unary_operation_t* op1, unary_operation_t* op2);

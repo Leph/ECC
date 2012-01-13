@@ -64,7 +64,7 @@ primary_expression
 ;
 
 array_expression_list
-: expression { $$ = create_arguments_list(); arguments_list_add_arg($$, $1); }
+: '[' expression ']' { $$ = create_arguments_list(); arguments_list_add_arg($$, $2); }
 | array_expression_list '[' expression ']' { $$ = $1; arguments_list_add_arg($$, $3); }
 ;
 
@@ -74,17 +74,17 @@ argument_expression_list
 ;
 
 unary_expression
-: primary_expression
+: primary_expression { $$ = $1; }
 ;
 
 expression
-: '+' unary_expression
-| '-' unary_expression
-| unary_expression '=' unary_expression
-| unary_expression MUL_ASSIGN unary_expression
-| unary_expression ADD_ASSIGN unary_expression
-| unary_expression SUB_ASSIGN unary_expression
-| unary_expression
+: '+' unary_expression { $$ = create_operation_plus($2); }
+| '-' unary_expression { $$ = create_operation_minus($2); }
+| unary_expression '=' unary_expression { $$ = create_operation_assign($1, $3); }
+| unary_expression MUL_ASSIGN unary_expression { $$ = create_operation_mult($1, $3); }
+| unary_expression ADD_ASSIGN unary_expression { $$ = create_operation_add($1, $3); }
+| unary_expression SUB_ASSIGN unary_expression { $$ = create_operation_sub($1, $3); }
+| unary_expression { $$ = create_operation_nop($1); }
 ;
 
 comparison_expression
@@ -109,7 +109,7 @@ jump_statement
 
 expression_statement
 : ';'
-| expression ';'
+| expression ';' { operation_print($1); printf("\n"); }
 ;
 
 labeled_statement

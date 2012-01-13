@@ -175,6 +175,33 @@ operation_t* create_operation_nop(unary_operation_t* op1)
     op->op2 = NULL;
     return op;
 }
+operation_t* create_operation_minus(unary_operation_t* op1)
+{
+    operation_t* op = malloc(sizeof(operation_t));
+    assert(op != NULL);
+    op->type = MINUS_T;
+    op->op1 = op1;
+    op->op2 = NULL;
+    return op;
+}
+operation_t* create_operation_plus(unary_operation_t* op1)
+{
+    operation_t* op = malloc(sizeof(operation_t));
+    assert(op != NULL);
+    op->type = PLUS_T;
+    op->op1 = op1;
+    op->op2 = NULL;
+    return op;
+}
+operation_t* create_operation_assign(unary_operation_t* op1, unary_operation_t* op2)
+{
+    operation_t* op = malloc(sizeof(operation_t));
+    assert(op != NULL);
+    op->type = ASSIGN_T;
+    op->op1 = op1;
+    op->op2 = op2;
+    return op;
+}
 operation_t* create_operation_add(unary_operation_t* op1, unary_operation_t* op2)
 {
     operation_t* op = malloc(sizeof(operation_t));
@@ -221,6 +248,19 @@ void operation_print(operation_t* op)
     switch (op->type) {
         case NOP_T:
             unary_operation_print(op->op1);
+            break;
+        case MINUS_T:
+            unary_operation_print(op->op1);
+            printf(" -");
+            break;
+        case PLUS_T:
+            unary_operation_print(op->op1);
+            printf(" +");
+            break;
+        case ASSIGN_T:
+            unary_operation_print(op->op1);
+            printf(" = ");
+            unary_operation_print(op->op2);
             break;
         case ADD_T:
             unary_operation_print(op->op1);

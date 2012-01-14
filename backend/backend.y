@@ -8,20 +8,27 @@
     int yylex();
     int yyerror();
 
+    variable_table_t* global_table = NULL;
     function_table_t* function_table = NULL;
 %}
 
 %union {
-	char* identifier;
-        int constant_int;
-        float constant_float;
-        type_t type;
-        variable_t* variable;
-        function_t* function;
-        variable_table_t* variable_table;
-        unary_operation_t* unary_operation;
-        operation_t* operation;
-        arguments_list_t* arguments_list;
+    char* identifier;
+    int constant_int;
+    float constant_float;
+    type_t type;
+    variable_t* variable;
+    function_t* function;
+    variable_table_t* variable_table;
+    unary_operation_t* unary_operation;
+    operation_t* operation;
+    arguments_list_t* arguments_list;
+    condition_t* condition;
+    label_t* label;
+    jump_t* jump;
+    statement_t* statement;
+    statement_table_t* statement_table;
+    block_t* block;
 };
 
 %token<identifier> IDENTIFIER
@@ -38,21 +45,27 @@
 %type<variable> parameter_declaration
 %type<function> parameter_declaration_list
 %type<function> function_prototype
+%type<function> function_definition
 %type<variable_table> variable_declarator_list
 %type<variable_table> declaration
 %type<variable_table> declaration_list
-%type<unary_operation> primary_expression
 %type<unary_operation> unary_expression
 %type<operation> expression
+%type<operation> expression_statement;
 %type<arguments_list> argument_expression_list
 %type<arguments_list> array_expression_list
-
-
+%type<condition> comparison_expression
+%type<condition> selection_statement
+%type<jump> jump_statement
+%type<label> labeled_statement
+%type<statement> statement
+%type<statement_table> statement_list
+%type<block> compound_statement
 
 %start program
 %%
 
-primary_expression
+unary_expression
 : IDENTIFIER { value_t* v = create_value_identifier($1); $$ = create_unary_operation_nop(v); }
 | CONSTANT_INT { value_t* v = create_value_const_int($1); $$ = create_unary_operation_nop(v); }
 | CONSTANT_FLOAT { value_t* v = create_value_const_float($1); $$ = create_unary_operation_nop(v); }
@@ -73,10 +86,6 @@ argument_expression_list
 | argument_expression_list ',' expression { $$ = $1; arguments_list_add_arg($$, $3); }
 ;
 
-unary_expression
-: primary_expression { $$ = $1; }
-;
-
 expression
 : '+' unary_expression { $$ = create_operation_plus($2); }
 | '-' unary_expression { $$ = create_operation_minus($2); }
@@ -88,45 +97,44 @@ expression
 ;
 
 comparison_expression
-: unary_expression
-| primary_expression '<' primary_expression
-| primary_expression '>' primary_expression
-| primary_expression LE_OP primary_expression
-| primary_expression GE_OP primary_expression
-| primary_expression EQ_OP primary_expression
-| primary_expression NE_OP primary_expression
+: expression { $$ = create_condition_bool($1); }
+| expression '<' expression { $$ = create_condition_l($1, $3); }
+| expression '>' expression { $$ = create_condition_g($1, $3); }
+| expression LE_OP expression { $$ = create_condition_le($1, $3); }
+| expression GE_OP expression { $$ = create_condition_ge($1, $3); }
+| expression EQ_OP expression { $$ = create_condition_eq($1, $3); }
+| expression NE_OP expression { $$ = create_condition_ne($1, $3); }
 ;
 
 selection_statement
-: IF '(' comparison_expression ')' statement
+: IF '(' comparison_expression ')' statement { $$ = $3; condition_set_statement($$, $5); }
 ;
 
 jump_statement
-: GOTO IDENTIFIER ';'
-| RETURN ';'
-| RETURN expression ';'
+: GOTO IDENTIFIER ';' { label_t* l = create_label($2); $$ = create_jump_goto(l); }
+| RETURN ';' { $$ = create_jump_return(); }
+| RETURN expression ';' { $$ = create_jump_return_op($2); }
 ;
 
 expression_statement
-: ';'
-| expression ';' { operation_print($1); printf("\n"); }
+: expression ';' { $$ = $1; }
 ;
 
 labeled_statement
-: IDENTIFIER ':'
+: IDENTIFIER ':' { $$ = create_label($1); }
 ;
 
 statement
-: labeled_statement
-| expression_statement
-| selection_statement
-| jump_statement
-| compound_statement
+: labeled_statement { $$ = create_statement_label($1); }
+| expression_statement { $$ = create_statement_op($1); }
+| selection_statement { $$ = create_statement_cond($1); }
+| jump_statement { $$ = create_statement_jmp($1); }
+| compound_statement { $$ = create_statement_block($1); }
 ;
 
 statement_list
-: statement
-| statement_list statement
+: statement { $$ = create_statement_table(); statement_table_add($$, $1); }
+| statement_list statement { $$ = $1; statement_table_add($$, $2); }
 ;
 
 declaration
@@ -139,9 +147,9 @@ declaration_list
 ;
 
 compound_statement
-: '{' '}'
-| '{' statement_list '}'
-| '{' declaration_list statement_list '}' { variable_table_print($2); }
+: '{' '}' { statement_table_t* st = create_statement_table(); variable_table_t* vt = create_variable_table(); $$ = create_block(vt, st); }
+| '{' statement_list '}' { variable_table_t* vt = create_variable_table(); $$ = create_block(vt, $2); }
+| '{' declaration_list statement_list '}' { $$ = create_block($2, $3); }
 ;
 
 type_name
@@ -180,13 +188,13 @@ function_prototype
 ;
 
 function_definition
-: function_prototype compound_statement { function_print($1); }
+: function_prototype compound_statement { $$ = $1; function_set_block($$, $2); }
 ;
 
 external_declaration
-: function_definition
-| type_name variable_declarator_list ';'
-| function_prototype ';'
+: function_definition { function_table_add(function_table, $1); }
+| type_name variable_declarator_list ';' { variable_table_set_all_type($2, $1); global_table = variable_table_merge(global_table, $2); }
+| function_prototype ';' { delete_function($1); }
 ;
 
 program
@@ -228,8 +236,18 @@ int main (int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
+    global_table = create_variable_table();
+    function_table = create_function_table();
+
     yyparse();
 
+    variable_table_print(global_table);
+    function_table_print(function_table);
+
+    delete_variable_table(global_table);
+    delete_function_table(function_table);
+
+    fclose(input);
     return EXIT_SUCCESS;
 }
 

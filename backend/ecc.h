@@ -19,11 +19,9 @@ typedef enum value_type_t value_type_t;
 
 struct value_t
 {
-    union {
-        char* identifier;
-        int const_int;
-        float const_float;
-    } val;
+    char* identifier;
+    int const_int;
+    float const_float;
     value_type_t type;
 };
 typedef struct value_t value_t;
@@ -99,6 +97,106 @@ void arguments_list_print(arguments_list_t* l);
 void arguments_list_add_arg(arguments_list_t* l, operation_t* op);
 
 /**
+ * Conditions
+ */
+
+enum condition_type_t {BOOL_T, L_T, G_T, LE_T, GE_T, EQ_T, NE_T};
+typedef enum condition_type_t condition_type_t;
+
+struct condition_t
+{
+    condition_type_t type;
+    operation_t* op1;
+    operation_t* op2;
+    struct statement_t* statement;
+};
+typedef struct condition_t condition_t;
+
+condition_t* create_condition_bool(operation_t* op1);
+condition_t* create_condition_l(operation_t* op1, operation_t* op2);
+condition_t* create_condition_g(operation_t* op1, operation_t* op2);
+condition_t* create_condition_le(operation_t* op1, operation_t* op2);
+condition_t* create_condition_ge(operation_t* op1, operation_t* op2);
+condition_t* create_condition_eq(operation_t* op1, operation_t* op2);
+condition_t* create_condition_ne(operation_t* op1, operation_t* op2);
+void delete_condition(condition_t* c);
+void condition_print(condition_t* c);
+void condition_set_statement(condition_t* c, struct statement_t* s);
+
+/**
+ * Label
+ */
+
+typedef char label_t;
+
+label_t* create_label(char* identifier);
+void delete_label(label_t* l);
+void label_print(label_t* l);
+
+/**
+ * Jump
+ */
+
+enum jump_type_t {GOTO_T, RETURN_T, RETURN_OP_T};
+typedef enum jump_type_t jump_type_t;
+
+struct jump_t
+{
+    jump_type_t type;
+    operation_t* op;
+    label_t* label;
+};
+typedef struct jump_t jump_t;
+
+jump_t* create_jump_return();
+jump_t* create_jump_return_op(operation_t* op);
+jump_t* create_jump_goto(label_t* label);
+void delete_jump(jump_t* j);
+void jump_print(jump_t* j);
+
+/**
+ * Statements
+ */
+
+enum statement_type_t {LABEL_T, OP_T, COND_T, JMP_T, BLOCK_T};
+typedef enum statement_type_t statement_type_t;
+
+struct statement_t
+{
+    statement_type_t type;
+    label_t* label;
+    operation_t* operation;
+    condition_t* condition;
+    jump_t* jump;
+    struct block_t* block;
+};
+typedef struct statement_t statement_t;
+
+statement_t* create_statement_label(label_t* l);
+statement_t* create_statement_op(operation_t* op);
+statement_t* create_statement_cond(condition_t* cond);
+statement_t* create_statement_jmp(jump_t* jmp);
+statement_t* create_statement_block(struct block_t* block);
+void delete_statement(statement_t* s);
+void statement_print(statement_t* s);
+
+/**
+ * Statements table
+ */
+
+struct statement_table_t
+{
+    statement_t** table;
+    int size;
+};
+typedef struct statement_table_t statement_table_t;
+
+statement_table_t* create_statement_table();
+void delete_statement_table(statement_table_t* t);
+void statement_table_print(statement_table_t* t);
+void statement_table_add(statement_table_t* t, statement_t* s);
+
+/**
  * Variables
  */
 
@@ -136,6 +234,21 @@ void variable_table_add_var(variable_table_t* t, variable_t* v);
 void variable_table_set_all_type(variable_table_t* t, type_t type);
 variable_table_t* variable_table_merge(variable_table_t* t1, variable_table_t* t2);
 
+/**
+ * Block
+ */
+
+struct block_t
+{
+    statement_table_t* st;
+    variable_table_t* vt;
+};
+typedef struct block_t block_t;
+
+block_t* create_block(variable_table_t* vt, statement_table_t* st);
+void delete_block(block_t* b);
+void block_print(block_t* b);
+
 /*
  * Functions
  */
@@ -146,6 +259,7 @@ struct function_t
     type_t type_return;
     int nb_params;
     variable_t** params;
+    block_t* block;
 };
 typedef struct function_t function_t;
 
@@ -155,6 +269,7 @@ void function_print(function_t* f);
 void function_set_name(function_t* f, char* name);
 void function_set_return(function_t* f, type_t type);
 void function_add_param(function_t* f, variable_t* v);
+void function_set_block(function_t* f, block_t* b);
 
 /**
  * Functions table
@@ -169,7 +284,8 @@ typedef struct function_table_t function_table_t;
 
 function_table_t* create_function_table();
 void delete_function_table(function_table_t* t);
-void function_table_add_function(function_table_t* t, function_t* f);
+void function_table_print(function_table_t* t);
+void function_table_add(function_table_t* t, function_t* f);
 
 #endif
 

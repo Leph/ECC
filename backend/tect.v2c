@@ -11,6 +11,9 @@ int main() {
     int b;
     float a, b;
     b = function(4);
+    if (b < 0) {
+        return 1;
+    }
     return 0;
 }
 

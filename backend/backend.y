@@ -229,7 +229,6 @@ int main (int argc, char *argv[]) {
             fprintf (stderr, "Could not open %s\n", argv[1]);
             return EXIT_FAILURE;
         }
-        free(file_name);
     }
     else {
         fprintf (stderr, "%s: error: no input file\n", *argv);
@@ -248,6 +247,7 @@ int main (int argc, char *argv[]) {
     delete_function_table(function_table);
 
     fclose(input);
+    free(file_name);
     return EXIT_SUCCESS;
 }
 

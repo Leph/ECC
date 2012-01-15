@@ -4,6 +4,7 @@
     #include <string.h>
 
     #include "ecc.h"
+    #include "asm.h"
 
     int yylex();
     int yyerror();
@@ -240,8 +241,10 @@ int main (int argc, char *argv[]) {
 
     yyparse();
 
-    variable_table_print(global_table);
-    function_table_print(function_table);
+    //variable_table_print(global_table);
+    //function_table_print(function_table);
+    asm_global_table(global_table);
+    asm_function_table(function_table);
 
     delete_variable_table(global_table);
     delete_function_table(function_table);

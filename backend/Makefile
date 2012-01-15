@@ -5,7 +5,7 @@ CC=gcc
 
 all:backend
 
-backend:backend.c scanner_backend.c ecc.c
+backend:backend.c scanner_backend.c ecc.c asm.c
 	$(CC) $(CFLAGS) -o $@ $^
 
 backend.c:backend.y

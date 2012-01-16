@@ -17,6 +17,14 @@ void type_print(type_t type)
         case FLOAT_T: printf("float"); break;
     }
 }
+int type_size(type_t type)
+{
+    switch (type) {
+        case INT_T: return INT_BYTES_LEN;
+        case FLOAT_T: return FLOAT_BYTES_LEN;
+        default: return 0;
+    }
+}
 
 /**
  * Values
@@ -749,6 +757,7 @@ variable_t* create_variable()
     v->type = VOID_T;
     v->dim = 0;
     v->size_array = NULL;
+    v->index = 0;
     return v;
 }
 void delete_variable(variable_t* v)
@@ -799,6 +808,16 @@ void variable_add_dim(variable_t* v, int size)
     assert(v->size_array != NULL);
     v->size_array[v->dim - 1] = size;
 }
+int variable_size(variable_t* v)
+{
+    assert(v != NULL);
+    int size = type_size(v->type);
+    int i;
+    for (i=0;i<v->dim;i++) {
+        size *= v->size_array[i];
+    }
+    return size;
+}
 
 /**
  * Variable table
@@ -841,6 +860,7 @@ void variable_table_add_var(variable_table_t* t, variable_t* v)
     t->size++;
     t->table = realloc(t->table, sizeof(variable_t*)*t->size);
     assert(t->table != NULL);
+    v->index = t->size-1;
     t->table[t->size-1] = v;
 }
 void variable_table_set_all_type(variable_table_t* t, type_t type)
@@ -872,6 +892,43 @@ variable_table_t* variable_table_merge(variable_table_t* t1, variable_table_t* t
     }
     free(t2);
     return t;
+}
+variable_t* variable_table_search_name(variable_table_t* t, char* name)
+{
+    assert(t != NULL);
+    assert(name != NULL);
+    int i;
+    for (i=0;i<t->size;i++) {
+        if (strcmp(name, t->table[i]->name) == 0) {
+            return t->table[i];
+        }
+    }
+    return NULL;
+}
+int variable_table_size(variable_table_t* t)
+{
+    assert(t != NULL);
+    int size = 0;
+    int i;
+    for (i=0;i<t->size;i++) {
+        size += variable_size(t->table[i]);
+    }
+    return size;
+}
+int variable_table_param_size(variable_table_t* t)
+{
+    assert(t != NULL);
+    int size = 0;
+    int i;
+    for (i=0;i<t->size;i++) {
+        if (t->table[i]->dim == 0) {
+            size += variable_size(t->table[i]);
+        }
+        else {
+            size += REF_BYTES_LEN;
+        }
+    }
+    return size;
 }
 
 /**
@@ -914,8 +971,7 @@ function_t* create_function()
     assert(f != NULL);
     f->name = NULL;
     f->type_return = VOID_T;
-    f->nb_params = 0;
-    f->params = NULL;
+    f->params = create_variable_table();
     f->block = NULL;
     return f;
 }
@@ -926,11 +982,8 @@ void delete_function(function_t* f)
         free(f->name);
     }
     if (f->params != NULL) {
-        int i;
-        for (i=0;i<f->nb_params;i++) {
-            delete_variable(f->params[i]);
-        }
-        free(f->params);
+        delete_variable_table(f->params);
+        f->params = NULL;
     }
     if (f->block != NULL) {
         delete_block(f->block);
@@ -950,11 +1003,11 @@ void function_print(function_t* f)
     }
     printf("(");
     int i;
-    for (i=0;i<f->nb_params;i++) {
+    for (i=0;i<f->params->size;i++) {
         if (i > 0) {
             printf(", ");
         }
-        variable_print(f->params[i]);
+        variable_print(f->params->table[i]);
     }
     printf(")");
     printf("\n");
@@ -979,10 +1032,7 @@ void function_add_param(function_t* f, variable_t* v)
 {
     assert(f != NULL);
     assert(v != NULL);
-    f->nb_params++;
-    f->params = realloc(f->params, sizeof(type_t*)*f->nb_params);
-    assert(f->params != NULL);
-    f->params[f->nb_params-1] = v;
+    variable_table_add_var(f->params, v);
 }
 void function_set_block(function_t* f, block_t* b)
 {

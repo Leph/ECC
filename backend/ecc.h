@@ -1,6 +1,14 @@
 #ifndef ECC_H
 #define ECC_H
 
+/**
+ * asm type length
+ */
+
+#define INT_BYTES_LEN 4
+#define FLOAT_BYTES_LEN 4
+#define REF_BYTES_LEN 4
+
 /*
  * Types
  */
@@ -9,6 +17,7 @@ enum type_t {VOID_T, INT_T, FLOAT_T};
 typedef enum type_t type_t;
 
 void type_print(type_t type);
+int type_size(type_t type);
 
 /**
  * Values
@@ -206,6 +215,7 @@ struct variable_t
     type_t type;
     int dim;
     int* size_array;
+    int index;
 };
 typedef struct variable_t variable_t;
 
@@ -215,6 +225,7 @@ void variable_print(variable_t* v);
 void variable_set_name(variable_t* v, char* name);
 void variable_set_type(variable_t* v, type_t type);
 void variable_add_dim(variable_t* v, int size);
+int variable_size(variable_t* v);
 
 /**
  * variables table
@@ -233,6 +244,9 @@ void variable_table_print(variable_table_t* t);
 void variable_table_add_var(variable_table_t* t, variable_t* v);
 void variable_table_set_all_type(variable_table_t* t, type_t type);
 variable_table_t* variable_table_merge(variable_table_t* t1, variable_table_t* t2);
+variable_t* variable_table_search_name(variable_table_t* t, char* name);
+int variable_table_size(variable_table_t* t);
+int variable_table_param_size(variable_table_t* t);
 
 /**
  * Block
@@ -257,8 +271,7 @@ struct function_t
 {
     char* name;
     type_t type_return;
-    int nb_params;
-    variable_t** params;
+    variable_table_t* params;
     block_t* block;
 };
 typedef struct function_t function_t;

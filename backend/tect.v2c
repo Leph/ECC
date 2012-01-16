@@ -2,7 +2,7 @@ int function2();
 
 int pouet;
 
-int function(int a) {
+int function(int a, int x, int y, int z) {
     a += 1;
     return a;
 }

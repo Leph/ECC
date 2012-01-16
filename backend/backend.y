@@ -180,7 +180,7 @@ parameter_declaration
 
 parameter_declaration_list
 : parameter_declaration { $$ = create_function(); function_add_param($$, $1); }
-| parameter_declaration ',' parameter_declaration_list { $$ = $3; function_add_param($$, $1);}
+| parameter_declaration_list ',' parameter_declaration { $$ = $1; function_add_param($$, $3);}
 ;
 
 function_prototype
@@ -241,8 +241,9 @@ int main (int argc, char *argv[]) {
 
     yyparse();
 
-    //variable_table_print(global_table);
-    //function_table_print(function_table);
+    variable_table_print(global_table);
+    function_table_print(function_table);
+    printf("\n\n---------------------\n\n");
     asm_global_table(global_table);
     asm_function_table(function_table);
 

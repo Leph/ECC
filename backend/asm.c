@@ -37,10 +37,10 @@ void asm_function(function_t* f)
     printf("\tpushl\t%%ebp\n");
     printf("\tmovl\t%%esp, %%ebp\n");
 
-    int size = variable_table_size(f->block->vt);
+    /*int size = variable_table_size(f->block->vt);
     if (size > 0) {
         printf("\tsubl\t$%d, %%esp\n", size);
-    }
+    }*/
 
     printf("\tleave\n");
     printf("\tret\n");

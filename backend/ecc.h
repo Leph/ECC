@@ -42,60 +42,12 @@ void delete_value(value_t* v);
 void value_print(value_t* v);
 
 /**
- * unary_operation
- */
-
-enum unary_operation_type_t {NONE_T, INC_OP_T, DEC_OP_T, FUNCTION_CALL_T, ARRAY_CALL_T};
-typedef enum unary_operation_type_t unary_operation_type_t;
-
-struct unary_operation_t
-{
-    value_t* value;
-    unary_operation_type_t type;
-    struct arguments_list_t* arguments;
-};
-typedef struct unary_operation_t unary_operation_t;
-
-unary_operation_t* create_unary_operation_nop(value_t* v);
-unary_operation_t* create_unary_operation_inc(value_t* v);
-unary_operation_t* create_unary_operation_dec(value_t* v);
-unary_operation_t* create_unary_operation_func(value_t* v, struct arguments_list_t* l);
-unary_operation_t* create_unary_operation_array(value_t* v, struct arguments_list_t* l);
-void delete_unary_operation(unary_operation_t* op);
-void unary_operation_print(unary_operation_t* op);
-
-/**
- * Operations
- */
-
-enum operation_type_t {NOP_T, MINUS_T, PLUS_T, ASSIGN_T, ADD_T, SUB_T, MULT_T};
-typedef enum operation_type_t operation_type_t;
-
-struct operation_t
-{
-    unary_operation_t* op1;
-    unary_operation_t* op2;
-    operation_type_t type;
-};
-typedef struct operation_t operation_t;
-
-operation_t* create_operation_nop(unary_operation_t* op1);
-operation_t* create_operation_minus(unary_operation_t* op1);
-operation_t* create_operation_plus(unary_operation_t* op1);
-operation_t* create_operation_assign(unary_operation_t* op1, unary_operation_t* op2);
-operation_t* create_operation_add(unary_operation_t* op1, unary_operation_t* op2);
-operation_t* create_operation_sub(unary_operation_t* op1, unary_operation_t* op2);
-operation_t* create_operation_mult(unary_operation_t* op1, unary_operation_t* op2);
-void delete_operation(operation_t* op);
-void operation_print(operation_t* op);
-
-/**
  * arguments_list
  */
 
 struct arguments_list_t
 {
-    operation_t** operations;
+    value_t** values;
     int size;
 };
 typedef struct arguments_list_t arguments_list_t;
@@ -103,7 +55,53 @@ typedef struct arguments_list_t arguments_list_t;
 arguments_list_t* create_arguments_list();
 void delete_arguments_list(arguments_list_t* l);
 void arguments_list_print(arguments_list_t* l);
-void arguments_list_add_arg(arguments_list_t* l, operation_t* op);
+void arguments_list_add_arg(arguments_list_t* l, value_t* v);
+
+/**
+ * unary_expression
+ */
+
+enum unary_expression_type_t {VALUE_T, ARRAY_T, FUNCTION_T};
+typedef enum unary_expression_type_t unary_expression_type_t;
+
+struct unary_expression_t
+{
+    value_t* value;
+    unary_expression_type_t type;
+    arguments_list_t* arguments;
+};
+typedef struct unary_expression_t unary_expression_t;
+
+unary_expression_t* create_unary_expression_value(value_t* v);
+unary_expression_t* create_unary_expression_array(value_t* v, arguments_list_t* l);
+unary_expression_t* create_unary_expression_func(value_t* v, arguments_list_t* l);
+void delete_unary_expression(unary_expression_t* e);
+void unary_expression_print(unary_expression_t* e);
+
+/**
+ * expression
+ */
+
+enum expression_type_t {NOP_T, INC_T, DEC_T, ASSIGN_T, ADD_T, SUB_T, MUL_T};
+typedef enum expression_type_t expression_type_t;
+
+struct expression_t
+{
+    expression_type_t type;
+    unary_expression_t* left;
+    unary_expression_t* right;
+};
+typedef struct expression_t expression_t;
+
+expression_t* create_expression_nop(unary_expression_t* e1);
+expression_t* create_expression_inc(unary_expression_t* e1);
+expression_t* create_expression_dec(unary_expression_t* e1);
+expression_t* create_expression_assign(unary_expression_t* e1, unary_expression_t* e2);
+expression_t* create_expression_add(unary_expression_t* e1, unary_expression_t* e2);
+expression_t* create_expression_sub(unary_expression_t* e1, unary_expression_t* e2);
+expression_t* create_expression_mul(unary_expression_t* e1, unary_expression_t* e2);
+void delete_expression(expression_t* e);
+void expression_print(expression_t* e);
 
 /**
  * Conditions
@@ -115,19 +113,19 @@ typedef enum condition_type_t condition_type_t;
 struct condition_t
 {
     condition_type_t type;
-    operation_t* op1;
-    operation_t* op2;
+    unary_expression_t* e1;
+    unary_expression_t* e2;
     struct statement_t* statement;
 };
 typedef struct condition_t condition_t;
 
-condition_t* create_condition_bool(operation_t* op1);
-condition_t* create_condition_l(operation_t* op1, operation_t* op2);
-condition_t* create_condition_g(operation_t* op1, operation_t* op2);
-condition_t* create_condition_le(operation_t* op1, operation_t* op2);
-condition_t* create_condition_ge(operation_t* op1, operation_t* op2);
-condition_t* create_condition_eq(operation_t* op1, operation_t* op2);
-condition_t* create_condition_ne(operation_t* op1, operation_t* op2);
+condition_t* create_condition_bool(unary_expression_t* e1);
+condition_t* create_condition_l(unary_expression_t* e1, unary_expression_t* e2);
+condition_t* create_condition_g(unary_expression_t* e1, unary_expression_t* e2);
+condition_t* create_condition_le(unary_expression_t* e1, unary_expression_t* e2);
+condition_t* create_condition_ge(unary_expression_t* e1, unary_expression_t* e2);
+condition_t* create_condition_eq(unary_expression_t* e1, unary_expression_t* e2);
+condition_t* create_condition_ne(unary_expression_t* e1, unary_expression_t* e2);
 void delete_condition(condition_t* c);
 void condition_print(condition_t* c);
 void condition_set_statement(condition_t* c, struct statement_t* s);
@@ -146,19 +144,19 @@ void label_print(label_t* l);
  * Jump
  */
 
-enum jump_type_t {GOTO_T, RETURN_T, RETURN_OP_T};
+enum jump_type_t {GOTO_T, RETURN_T, RETURN_EXP_T};
 typedef enum jump_type_t jump_type_t;
 
 struct jump_t
 {
     jump_type_t type;
-    operation_t* op;
+    unary_expression_t* exp;
     label_t* label;
 };
 typedef struct jump_t jump_t;
 
 jump_t* create_jump_return();
-jump_t* create_jump_return_op(operation_t* op);
+jump_t* create_jump_return_exp(unary_expression_t* exp);
 jump_t* create_jump_goto(label_t* label);
 void delete_jump(jump_t* j);
 void jump_print(jump_t* j);
@@ -167,14 +165,14 @@ void jump_print(jump_t* j);
  * Statements
  */
 
-enum statement_type_t {LABEL_T, OP_T, COND_T, JMP_T, BLOCK_T};
+enum statement_type_t {LABEL_T, EXP_T, COND_T, JMP_T, BLOCK_T};
 typedef enum statement_type_t statement_type_t;
 
 struct statement_t
 {
     statement_type_t type;
     label_t* label;
-    operation_t* operation;
+    expression_t* expression;
     condition_t* condition;
     jump_t* jump;
     struct block_t* block;
@@ -182,7 +180,7 @@ struct statement_t
 typedef struct statement_t statement_t;
 
 statement_t* create_statement_label(label_t* l);
-statement_t* create_statement_op(operation_t* op);
+statement_t* create_statement_exp(expression_t* exp);
 statement_t* create_statement_cond(condition_t* cond);
 statement_t* create_statement_jmp(jump_t* jmp);
 statement_t* create_statement_block(struct block_t* block);
@@ -215,7 +213,7 @@ struct variable_t
     type_t type;
     int dim;
     int* size_array;
-    int index;
+    int offset; /* Offset en octet par rapport à %ebp */
 };
 typedef struct variable_t variable_t;
 
@@ -235,6 +233,7 @@ struct variable_table_t
 {
     variable_t** table;
     int size;
+    struct variable_table_t* parent;
 };
 typedef struct variable_table_t variable_table_t;
 
@@ -245,8 +244,6 @@ void variable_table_add_var(variable_table_t* t, variable_t* v);
 void variable_table_set_all_type(variable_table_t* t, type_t type);
 variable_table_t* variable_table_merge(variable_table_t* t1, variable_table_t* t2);
 variable_t* variable_table_search_name(variable_table_t* t, char* name);
-int variable_table_size(variable_table_t* t);
-int variable_table_param_size(variable_table_t* t);
 
 /**
  * Block
@@ -254,8 +251,8 @@ int variable_table_param_size(variable_table_t* t);
 
 struct block_t
 {
-    statement_table_t* st;
     variable_table_t* vt;
+    statement_table_t* st;
 };
 typedef struct block_t block_t;
 
@@ -263,7 +260,7 @@ block_t* create_block(variable_table_t* vt, statement_table_t* st);
 void delete_block(block_t* b);
 void block_print(block_t* b);
 
-/*
+/**
  * Functions
  */
 
@@ -273,6 +270,7 @@ struct function_t
     type_t type_return;
     variable_table_t* params;
     block_t* block;
+    int offset; /* taille à réserver sur la pile */
 };
 typedef struct function_t function_t;
 
@@ -299,6 +297,16 @@ function_table_t* create_function_table();
 void delete_function_table(function_table_t* t);
 void function_table_print(function_table_t* t);
 void function_table_add(function_table_t* t, function_t* f);
+
+/**
+ * utils functions
+ */
+
+void do_variable_table_links_block(block_t* b, variable_table_t* current);
+void do_variable_table_links(function_table_t* ft, variable_table_t* global_table);
+
+void do_variable_offset_block(function_table_t* ft);
+void do_variable_offset(function_table_t* ft);
 
 #endif
 

@@ -76,229 +76,6 @@ void value_print(value_t* v)
 }
 
 /**
- * unary_operation
- */
-
-unary_operation_t* create_unary_operation_nop(value_t* v)
-{
-    unary_operation_t* op = malloc(sizeof(unary_operation_t));
-    assert(op != NULL);
-    op->type = NONE_T;
-    op->value = v;
-    op->arguments = NULL;
-    return op;
-}
-unary_operation_t* create_unary_operation_inc(value_t* v)
-{
-    unary_operation_t* op = malloc(sizeof(unary_operation_t));
-    assert(op != NULL);
-    op->type = INC_OP_T;
-    op->value = v;
-    op->arguments = NULL;
-    return op;
-}
-unary_operation_t* create_unary_operation_dec(value_t* v)
-{
-    unary_operation_t* op = malloc(sizeof(unary_operation_t));
-    assert(op != NULL);
-    op->type = DEC_OP_T;
-    op->value = v;
-    op->arguments = NULL;
-    return op;
-}
-unary_operation_t* create_unary_operation_func(value_t* v, arguments_list_t* l)
-{
-    unary_operation_t* op = malloc(sizeof(unary_operation_t));
-    assert(op != NULL);
-    assert(l != NULL);
-    op->type = FUNCTION_CALL_T;
-    op->value = v;
-    op->arguments = l;
-    return op;
-}
-unary_operation_t* create_unary_operation_array(value_t* v, arguments_list_t* l)
-{
-    unary_operation_t* op = malloc(sizeof(unary_operation_t));
-    assert(op != NULL);
-    assert(l != NULL);
-    op->type = ARRAY_CALL_T;
-    op->value = v;
-    op->arguments = l;
-    return op;
-}
-void delete_unary_operation(unary_operation_t* op)
-{
-    assert(op != NULL);
-    if (op->value != NULL) {
-        delete_value(op->value);
-        op->value = NULL;
-    }
-    if (op->arguments != NULL) {
-        delete_arguments_list(op->arguments);
-        op->arguments = NULL;
-    }
-    free(op);
-}
-void unary_operation_print(unary_operation_t* op)
-{
-    assert(op != NULL);
-    switch (op->type) {
-        case NONE_T:
-            value_print(op->value);
-            break;
-        case INC_OP_T:
-            value_print(op->value);
-            printf("++");
-            break;
-        case DEC_OP_T:
-            value_print(op->value);
-            printf("--");
-            break;
-        case FUNCTION_CALL_T:
-            value_print(op->value);
-            printf("(");
-            arguments_list_print(op->arguments);
-            printf(")");
-            break;
-        case ARRAY_CALL_T:
-            value_print(op->value);
-            printf("[");
-            arguments_list_print(op->arguments);
-            printf("]");
-            break;
-    }
-}
-
-/**
- * Operations
- */
-
-operation_t* create_operation_nop(unary_operation_t* op1)
-{
-    assert(op1 != NULL);
-    operation_t* op = malloc(sizeof(operation_t));
-    assert(op != NULL);
-    op->type = NOP_T;
-    op->op1 = op1;
-    op->op2 = NULL;
-    return op;
-}
-operation_t* create_operation_minus(unary_operation_t* op1)
-{
-    assert(op1 != NULL);
-    operation_t* op = malloc(sizeof(operation_t));
-    assert(op != NULL);
-    op->type = MINUS_T;
-    op->op1 = op1;
-    op->op2 = NULL;
-    return op;
-}
-operation_t* create_operation_plus(unary_operation_t* op1)
-{
-    assert(op1 != NULL);
-    operation_t* op = malloc(sizeof(operation_t));
-    assert(op != NULL);
-    op->type = PLUS_T;
-    op->op1 = op1;
-    op->op2 = NULL;
-    return op;
-}
-operation_t* create_operation_assign(unary_operation_t* op1, unary_operation_t* op2)
-{
-    assert(op1 != NULL);
-    assert(op2 != NULL);
-    operation_t* op = malloc(sizeof(operation_t));
-    assert(op != NULL);
-    op->type = ASSIGN_T;
-    op->op1 = op1;
-    op->op2 = op2;
-    return op;
-}
-operation_t* create_operation_add(unary_operation_t* op1, unary_operation_t* op2)
-{
-    assert(op1 != NULL);
-    assert(op2 != NULL);
-    operation_t* op = malloc(sizeof(operation_t));
-    assert(op != NULL);
-    op->type = ADD_T;
-    op->op1 = op1;
-    op->op2 = op2;
-    return op;
-}
-operation_t* create_operation_sub(unary_operation_t* op1, unary_operation_t* op2)
-{
-    assert(op1 != NULL);
-    assert(op2 != NULL);
-    operation_t* op = malloc(sizeof(operation_t));
-    assert(op != NULL);
-    op->type = SUB_T;
-    op->op1 = op1;
-    op->op2 = op2;
-    return op;
-}
-operation_t* create_operation_mult(unary_operation_t* op1, unary_operation_t* op2)
-{
-    assert(op1 != NULL);
-    assert(op2 != NULL);
-    operation_t* op = malloc(sizeof(operation_t));
-    assert(op != NULL);
-    op->type = MULT_T;
-    op->op1 = op1;
-    op->op2 = op2;
-    return op;
-}
-void delete_operation(operation_t* op)
-{
-    assert(op != NULL);
-    if (op->op1 != NULL) {
-        delete_unary_operation(op->op1);
-        op->op1 = NULL;
-    }
-    if (op->op2 != NULL) {
-        delete_unary_operation(op->op2);
-        op->op2 = NULL;
-    }
-    free(op);
-}
-void operation_print(operation_t* op)
-{
-    assert(op != NULL);
-    switch (op->type) {
-        case NOP_T:
-            unary_operation_print(op->op1);
-            break;
-        case MINUS_T:
-            unary_operation_print(op->op1);
-            printf(" -");
-            break;
-        case PLUS_T:
-            unary_operation_print(op->op1);
-            printf(" +");
-            break;
-        case ASSIGN_T:
-            unary_operation_print(op->op1);
-            printf(" = ");
-            unary_operation_print(op->op2);
-            break;
-        case ADD_T:
-            unary_operation_print(op->op1);
-            printf(" += ");
-            unary_operation_print(op->op2);
-            break;
-        case SUB_T:
-            unary_operation_print(op->op1);
-            printf(" -= ");
-            unary_operation_print(op->op2);
-            break;
-        case MULT_T:
-            unary_operation_print(op->op1);
-            printf(" *= ");
-            unary_operation_print(op->op2);
-            break;
-    }
-}
-
-/**
  * arguments_list
  */
 
@@ -306,20 +83,20 @@ arguments_list_t* create_arguments_list()
 {
     arguments_list_t* l = malloc(sizeof(arguments_list_t));
     assert(l != NULL);
-    l->operations = NULL;
+    l->values = NULL;
     l->size = 0;
     return l;
 }
 void delete_arguments_list(arguments_list_t* l)
 {
     assert(l != NULL);
-    if (l->operations != NULL) {
+    if (l->values != NULL) {
         int i;
         for (i=0;i<l->size;i++) {
-            delete_operation(l->operations[i]);
+            delete_value(l->values[i]);
         }
-        free(l->operations);
-        l->operations = NULL;
+        free(l->values);
+        l->values = NULL;
     }
     free(l);
 }
@@ -329,102 +106,296 @@ void arguments_list_print(arguments_list_t* l)
     int i;
     for (i=0;i<l->size;i++) {
         if (i > 0) printf(", ");
-        operation_print(l->operations[i]);
+        value_print(l->values[i]);
     }
 }
-void arguments_list_add_arg(arguments_list_t* l, operation_t* op)
+void arguments_list_add_arg(arguments_list_t* l, value_t* v)
 {
     assert(l != NULL);
-    assert(op != NULL);
+    assert(v != NULL);
     l->size++;
-    l->operations = realloc(l->operations, sizeof(operation_t*)*l->size);
-    assert(l->operations != NULL);
-    l->operations[l->size-1] = op;
+    l->values = realloc(l->values, sizeof(value_t*)*l->size);
+    assert(l->values != NULL);
+    l->values[l->size-1] = v;
+}
+
+/**
+ * unary_operation
+ */
+unary_expression_t* create_unary_expression_value(value_t* v)
+{
+    assert(v != NULL);
+    unary_expression_t* e = malloc(sizeof(unary_expression_t));
+    assert(e != NULL);
+    e->type = VALUE_T;
+    e->value = v;
+    e->arguments = NULL;
+    return e;
+}
+unary_expression_t* create_unary_expression_array(value_t* v, arguments_list_t* l)
+{
+    assert(v != NULL);
+    assert(l != NULL);
+    unary_expression_t* e = malloc(sizeof(unary_expression_t));
+    assert(e != NULL);
+    e->type = ARRAY_T;
+    e->value = v;
+    e->arguments = l;
+    return e;
+}
+unary_expression_t* create_unary_expression_func(value_t* v, arguments_list_t* l)
+{
+    assert(v != NULL);
+    assert(l != NULL);
+    unary_expression_t* e = malloc(sizeof(unary_expression_t));
+    assert(e != NULL);
+    e->type = FUNCTION_T;
+    e->value = v;
+    e->arguments = l;
+    return e;
+}
+void delete_unary_expression(unary_expression_t* e)
+{
+    assert(e != NULL);
+    delete_value(e->value);
+    if (e->arguments != NULL) {
+        delete_arguments_list(e->arguments);
+        e->arguments = NULL;
+    }
+    free(e);
+}
+void unary_expression_print(unary_expression_t* e)
+{
+    assert(e != NULL);
+    value_print(e->value);
+    switch (e->type) {
+        case VALUE_T:
+            break;
+        case ARRAY_T:
+            printf("[");
+            arguments_list_print(e->arguments);
+            printf("]");
+            break;
+        case FUNCTION_T:
+            printf("(");
+            arguments_list_print(e->arguments);
+            printf(")");
+            break;
+    }
+}
+
+/**
+ * Expressions
+ */
+
+expression_t* create_expression_nop(unary_expression_t* e1)
+{
+    assert(e1 != NULL);
+    expression_t* exp = malloc(sizeof(expression_t));
+    assert(exp != NULL);
+    exp->type = NOP_T;
+    exp->left = NULL;
+    exp->right = e1;
+    return exp;
+}
+expression_t* create_expression_inc(unary_expression_t* e1)
+{
+    assert(e1 != NULL);
+    expression_t* exp = malloc(sizeof(expression_t));
+    assert(exp != NULL);
+    exp->type = INC_T;
+    exp->left = e1;
+    exp->right = NULL;
+    return exp;
+}
+expression_t* create_expression_dec(unary_expression_t* e1)
+{
+    assert(e1 != NULL);
+    expression_t* exp = malloc(sizeof(expression_t));
+    assert(exp != NULL);
+    exp->type = DEC_T;
+    exp->left = e1;
+    exp->right = NULL;
+    return exp;
+}
+expression_t* create_expression_assign(unary_expression_t* e1, unary_expression_t* e2)
+{
+    assert(e1 != NULL);
+    assert(e2 != NULL);
+    expression_t* exp = malloc(sizeof(expression_t));
+    assert(exp != NULL);
+    exp->type = ASSIGN_T;
+    exp->left = e1;
+    exp->right = e2;
+    return exp;
+}
+expression_t* create_expression_add(unary_expression_t* e1, unary_expression_t* e2)
+{
+    assert(e1 != NULL);
+    assert(e2 != NULL);
+    expression_t* exp = malloc(sizeof(expression_t));
+    assert(exp != NULL);
+    exp->type = ADD_T;
+    exp->left = e1;
+    exp->right = e2;
+    return exp;
+}
+expression_t* create_expression_sub(unary_expression_t* e1, unary_expression_t* e2)
+{
+    assert(e1 != NULL);
+    assert(e2 != NULL);
+    expression_t* exp = malloc(sizeof(expression_t));
+    assert(exp != NULL);
+    exp->type = SUB_T;
+    exp->left = e1;
+    exp->right = e2;
+    return exp;
+}
+expression_t* create_expression_mul(unary_expression_t* e1, unary_expression_t* e2)
+{
+    assert(e1 != NULL);
+    assert(e2 != NULL);
+    expression_t* exp = malloc(sizeof(expression_t));
+    assert(exp != NULL);
+    exp->type = MUL_T;
+    exp->left = e1;
+    exp->right = e2;
+    return exp;
+}
+void delete_expression(expression_t* e)
+{
+    assert(e != NULL);
+    if (e->left != NULL) {
+        delete_unary_expression(e->left);
+        e->left = NULL;
+    }
+    if (e->right != NULL) {
+        delete_unary_expression(e->right);
+        e->right = NULL;
+    }
+    free(e);
+}
+void expression_print(expression_t* e)
+{
+    assert(e != NULL);
+    switch (e->type) {
+        case NOP_T:
+            unary_expression_print(e->right);
+            break;
+        case INC_T:
+            unary_expression_print(e->left);
+            printf("++");
+            break;
+        case DEC_T:
+            unary_expression_print(e->left);
+            printf("--");
+            break;
+        case ASSIGN_T:
+            unary_expression_print(e->left);
+            printf(" = ");
+            unary_expression_print(e->right);
+            break;
+        case ADD_T:
+            unary_expression_print(e->left);
+            printf(" += ");
+            unary_expression_print(e->right);
+            break;
+        case SUB_T:
+            unary_expression_print(e->left);
+            printf(" -= ");
+            unary_expression_print(e->right);
+            break;
+        case MUL_T:
+            unary_expression_print(e->left);
+            printf(" *= ");
+            unary_expression_print(e->right);
+            break;
+    }
 }
 
 /**
  * Condition
  */
 
-condition_t* create_condition_bool(operation_t* op1)
+condition_t* create_condition_bool(unary_expression_t* e1)
 {
-    assert(op1 != NULL);
+    assert(e1 != NULL);
     condition_t* c = malloc(sizeof(condition_t));
     assert(c != NULL);
-    c->op1 = op1;
-    c->op2 = NULL;
+    c->e1 = e1;
+    c->e2 = NULL;
     c->type = BOOL_T;
     c->statement = NULL;
     return c;
 }
-condition_t* create_condition_l(operation_t* op1, operation_t* op2)
+condition_t* create_condition_l(unary_expression_t* e1, unary_expression_t* e2)
 {
-    assert(op1 != NULL);
-    assert(op2 != NULL);
+    assert(e1 != NULL);
+    assert(e2 != NULL);
     condition_t* c = malloc(sizeof(condition_t));
     assert(c != NULL);
-    c->op1 = op1;
-    c->op2 = op2;
+    c->e1 = e1;
+    c->e2 = e2;
     c->type = L_T;
     c->statement = NULL;
     return c;
 }
-condition_t* create_condition_g(operation_t* op1, operation_t* op2)
+condition_t* create_condition_g(unary_expression_t* e1, unary_expression_t* e2)
 {
-    assert(op1 != NULL);
-    assert(op2 != NULL);
+    assert(e1 != NULL);
+    assert(e2 != NULL);
     condition_t* c = malloc(sizeof(condition_t));
     assert(c != NULL);
-    c->op1 = op1;
-    c->op2 = op2;
+    c->e1 = e1;
+    c->e2 = e2;
     c->type = G_T;
     c->statement = NULL;
     return c;
 }
-condition_t* create_condition_le(operation_t* op1, operation_t* op2)
+condition_t* create_condition_le(unary_expression_t* e1, unary_expression_t* e2)
 {
-    assert(op1 != NULL);
-    assert(op2 != NULL);
+    assert(e1 != NULL);
+    assert(e2 != NULL);
     condition_t* c = malloc(sizeof(condition_t));
     assert(c != NULL);
-    c->op1 = op1;
-    c->op2 = op2;
+    c->e1 = e1;
+    c->e2 = e2;
     c->type = LE_T;
     c->statement = NULL;
     return c;
 }
-condition_t* create_condition_ge(operation_t* op1, operation_t* op2)
+condition_t* create_condition_ge(unary_expression_t* e1, unary_expression_t* e2)
 {
-    assert(op1 != NULL);
-    assert(op2 != NULL);
+    assert(e1 != NULL);
+    assert(e2 != NULL);
     condition_t* c = malloc(sizeof(condition_t));
     assert(c != NULL);
-    c->op1 = op1;
-    c->op2 = op2;
+    c->e1 = e1;
+    c->e2 = e2;
     c->type = GE_T;
     c->statement = NULL;
     return c;
 }
-condition_t* create_condition_eq(operation_t* op1, operation_t* op2)
+condition_t* create_condition_eq(unary_expression_t* e1, unary_expression_t* e2)
 {
-    assert(op1 != NULL);
-    assert(op2 != NULL);
+    assert(e1 != NULL);
+    assert(e2 != NULL);
     condition_t* c = malloc(sizeof(condition_t));
     assert(c != NULL);
-    c->op1 = op1;
-    c->op2 = op2;
+    c->e1 = e1;
+    c->e2 = e2;
     c->type = EQ_T;
     c->statement = NULL;
     return c;
 }
-condition_t* create_condition_ne(operation_t* op1, operation_t* op2)
+condition_t* create_condition_ne(unary_expression_t* e1, unary_expression_t* e2)
 {
-    assert(op1 != NULL);
-    assert(op2 != NULL);
+    assert(e1 != NULL);
+    assert(e2 != NULL);
     condition_t* c = malloc(sizeof(condition_t));
     assert(c != NULL);
-    c->op1 = op1;
-    c->op2 = op2;
+    c->e1 = e1;
+    c->e2 = e2;
     c->type = NE_T;
     c->statement = NULL;
     return c;
@@ -432,13 +403,13 @@ condition_t* create_condition_ne(operation_t* op1, operation_t* op2)
 void delete_condition(condition_t* c)
 {
     assert(c != NULL);
-    if (c->op1 != NULL) {
-        delete_operation(c->op1);
-        c->op1 = NULL;
+    if (c->e1 != NULL) {
+        delete_unary_expression(c->e1);
+        c->e1 = NULL;
     }
-    if (c->op2 != NULL) {
-        delete_operation(c->op2);
-        c->op2 = NULL;
+    if (c->e2 != NULL) {
+        delete_unary_expression(c->e2);
+        c->e2 = NULL;
     }
     if (c->statement != NULL) {
         delete_statement(c->statement);
@@ -452,37 +423,37 @@ void condition_print(condition_t* c)
     printf("IF (");
     switch (c->type) {
         case BOOL_T:
-            operation_print(c->op1);
+            unary_expression_print(c->e1);
             break;
         case L_T:
-            operation_print(c->op1);
+            unary_expression_print(c->e1);
             printf(" < ");
-            operation_print(c->op2);
+            unary_expression_print(c->e2);
             break;
         case G_T:
-            operation_print(c->op1);
+            unary_expression_print(c->e1);
             printf(" > ");
-            operation_print(c->op2);
+            unary_expression_print(c->e2);
             break;
         case LE_T:
-            operation_print(c->op1);
+            unary_expression_print(c->e1);
             printf(" <= ");
-            operation_print(c->op2);
+            unary_expression_print(c->e2);
             break;
         case GE_T:
-            operation_print(c->op1);
+            unary_expression_print(c->e1);
             printf(" >= ");
-            operation_print(c->op2);
+            unary_expression_print(c->e2);
             break;
         case EQ_T:
-            operation_print(c->op1);
+            unary_expression_print(c->e1);
             printf(" == ");
-            operation_print(c->op2);
+            unary_expression_print(c->e2);
             break;
         case NE_T:
-            operation_print(c->op1);
+            unary_expression_print(c->e1);
             printf(" != ");
-            operation_print(c->op2);
+            unary_expression_print(c->e2);
             break;
     }
     printf(") ");
@@ -530,19 +501,19 @@ jump_t* create_jump_return()
 {
     jump_t* j = malloc(sizeof(jump_t));
     assert(j != NULL);
-    j->op = NULL;
+    j->exp = NULL;
     j->label = NULL;
     j->type = RETURN_T;
     return j;
 }
-jump_t* create_jump_return_op(operation_t* op)
+jump_t* create_jump_return_exp(unary_expression_t* exp)
 {
-    assert(op != NULL);
+    assert(exp != NULL);
     jump_t* j = malloc(sizeof(jump_t));
     assert(j != NULL);
-    j->op = op;
+    j->exp = exp;
     j->label = NULL;
-    j->type = RETURN_OP_T;
+    j->type = RETURN_EXP_T;
     return j;
 }
 jump_t* create_jump_goto(label_t* label)
@@ -550,7 +521,7 @@ jump_t* create_jump_goto(label_t* label)
     assert(label != NULL);
     jump_t* j = malloc(sizeof(jump_t));
     assert(j != NULL);
-    j->op = NULL;
+    j->exp = NULL;
     j->label = label;
     j->type = GOTO_T;
     return j;
@@ -558,9 +529,9 @@ jump_t* create_jump_goto(label_t* label)
 void delete_jump(jump_t* j)
 {
     assert(j != NULL);
-    if (j->op != NULL) {
-        delete_operation(j->op);
-        j->op = NULL;
+    if (j->exp != NULL) {
+        delete_unary_expression(j->exp);
+        j->exp = NULL;
     }
     if (j->label != NULL) {
         delete_label(j->label);
@@ -579,9 +550,9 @@ void jump_print(jump_t* j)
         case RETURN_T:
             printf("RETURN");
             break;
-        case RETURN_OP_T:
+        case RETURN_EXP_T:
             printf("RETURN ");
-            operation_print(j->op);
+            unary_expression_print(j->exp);
             break;
     }
 }
@@ -597,20 +568,20 @@ statement_t* create_statement_label(label_t* l)
     assert(s != NULL);
     s->type = LABEL_T;
     s->label = l;
-    s->operation = NULL;
+    s->expression = NULL;
     s->condition = NULL;
     s->jump = NULL;
     s->block = NULL;
     return s;
 }
-statement_t* create_statement_op(operation_t* op)
+statement_t* create_statement_exp(expression_t* exp)
 {
-    assert(op != NULL);
+    assert(exp != NULL);
     statement_t* s = malloc(sizeof(statement_t));
     assert(s != NULL);
-    s->type = OP_T;
+    s->type = EXP_T;
     s->label = NULL;
-    s->operation = op;
+    s->expression = exp;
     s->condition = NULL;
     s->jump = NULL;
     s->block = NULL;
@@ -623,7 +594,7 @@ statement_t* create_statement_cond(condition_t* cond)
     assert(s != NULL);
     s->type = COND_T;
     s->label = NULL;
-    s->operation = NULL;
+    s->expression = NULL;
     s->condition = cond;
     s->jump = NULL;
     s->block = NULL;
@@ -636,7 +607,7 @@ statement_t* create_statement_jmp(jump_t* jmp)
     assert(s != NULL);
     s->type = JMP_T;
     s->label = NULL;
-    s->operation = NULL;
+    s->expression = NULL;
     s->condition = NULL;
     s->jump = jmp;
     s->block = NULL;
@@ -649,7 +620,7 @@ statement_t* create_statement_block(block_t* block)
     assert(s != NULL);
     s->type = BLOCK_T;
     s->label = NULL;
-    s->operation = NULL;
+    s->expression = NULL;
     s->condition = NULL;
     s->jump = NULL;
     s->block = block;
@@ -662,9 +633,9 @@ void delete_statement(statement_t* s)
         delete_label(s->label);
         s->label = NULL;
     }
-    if (s->operation != NULL) {
-        delete_operation(s->operation);
-        s->operation = NULL;
+    if (s->expression != NULL) {
+        delete_expression(s->expression);
+        s->expression = NULL;
     }
     if (s->condition != NULL) {
         delete_condition(s->condition);
@@ -687,8 +658,8 @@ void statement_print(statement_t* s)
         case LABEL_T:
             label_print(s->label);
             break;
-        case OP_T:
-            operation_print(s->operation);
+        case EXP_T:
+            expression_print(s->expression);
             break;
         case COND_T:
             condition_print(s->condition);
@@ -757,7 +728,7 @@ variable_t* create_variable()
     v->type = VOID_T;
     v->dim = 0;
     v->size_array = NULL;
-    v->index = 0;
+    v->offset = 0;
     return v;
 }
 void delete_variable(variable_t* v)
@@ -778,7 +749,7 @@ void variable_print(variable_t* v)
     assert(v != NULL);
     type_print(v->type);
     if (v->name != NULL) {
-        printf(" %s", v->name);
+        printf(" %s{%d}", v->name, v->offset);
     }
     else {
         printf(" ?");
@@ -811,10 +782,12 @@ void variable_add_dim(variable_t* v, int size)
 int variable_size(variable_t* v)
 {
     assert(v != NULL);
-    int size = type_size(v->type);
-    int i;
-    for (i=0;i<v->dim;i++) {
-        size *= v->size_array[i];
+    int size;
+    if (v->dim == 0) {
+        size = type_size(v->type);
+    }
+    else {
+        size = REF_BYTES_LEN;
     }
     return size;
 }
@@ -829,6 +802,7 @@ variable_table_t* create_variable_table()
     assert(t != NULL);
     t->table = NULL;
     t->size = 0;
+    t->parent = NULL;
     return t;
 }
 void delete_variable_table(variable_table_t* t)
@@ -860,7 +834,6 @@ void variable_table_add_var(variable_table_t* t, variable_t* v)
     t->size++;
     t->table = realloc(t->table, sizeof(variable_t*)*t->size);
     assert(t->table != NULL);
-    v->index = t->size-1;
     t->table[t->size-1] = v;
 }
 void variable_table_set_all_type(variable_table_t* t, type_t type)
@@ -905,31 +878,6 @@ variable_t* variable_table_search_name(variable_table_t* t, char* name)
     }
     return NULL;
 }
-int variable_table_size(variable_table_t* t)
-{
-    assert(t != NULL);
-    int size = 0;
-    int i;
-    for (i=0;i<t->size;i++) {
-        size += variable_size(t->table[i]);
-    }
-    return size;
-}
-int variable_table_param_size(variable_table_t* t)
-{
-    assert(t != NULL);
-    int size = 0;
-    int i;
-    for (i=0;i<t->size;i++) {
-        if (t->table[i]->dim == 0) {
-            size += variable_size(t->table[i]);
-        }
-        else {
-            size += REF_BYTES_LEN;
-        }
-    }
-    return size;
-}
 
 /**
  * Block
@@ -973,6 +921,7 @@ function_t* create_function()
     f->type_return = VOID_T;
     f->params = create_variable_table();
     f->block = NULL;
+    f->offset = 0;
     return f;
 }
 void delete_function(function_t* f)
@@ -1081,5 +1030,63 @@ void function_table_add(function_table_t* t, function_t* f)
     t->table = realloc(t->table, sizeof(function_t*)*t->size);
     assert(t->table != NULL);
     t->table[t->size-1] = f;
+}
+
+/**
+ * utils functions
+ */
+
+void do_variable_table_links_block(block_t* b, variable_table_t* current)
+{
+    assert(b != NULL);
+    assert(current != NULL);
+    b->vt->parent = current;
+    int i;
+    for (i=0;i<b->st->size;i++) {
+        if (b->st->table[i]->type == BLOCK_T) {
+            do_variable_table_links_block(b->st->table[i]->block, b->vt);
+        }
+    }
+}
+void do_variable_table_links(function_table_t* ft, variable_table_t* global_table)
+{
+    assert(ft != NULL);
+    assert(global_table != NULL);
+    int i;
+    for (i=0;i<ft->size;i++) {
+        ft->table[i]->params->parent = global_table;
+        do_variable_table_links_block(ft->table[i]->block, ft->table[i]->params);
+    }
+}
+
+int do_variable_table_block(block_t* b, int current_offset)
+{
+    int offset = current_offset;
+    int i;
+    for (i=0;i<b->vt->size;i++) {
+        b->vt->table[i]->offset = offset;
+        offset -= variable_size(b->vt->table[i]);
+    }
+    for (i=0;i<b->st->size;i++) {
+        if (b->st->table[i]->type == BLOCK_T) {
+            offset = do_variable_table_block(b->st->table[i]->block, offset);
+        }
+    }
+    return offset;
+}
+void do_variable_offset(function_table_t* ft)
+{
+    assert(ft != NULL);
+    int i,j;
+    for (i=0;i<ft->size;i++) {
+        function_t* f = ft->table[i];
+        int offset = REF_BYTES_LEN;
+        for (j=0;j<f->params->size;j++) {
+            variable_t* v = f->params->table[j];
+            offset += variable_size(v);
+            v->offset = offset;
+        }
+        f->offset = do_variable_table_block(f->block, 0);
+    }
 }
 

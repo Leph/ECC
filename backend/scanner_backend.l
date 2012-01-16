@@ -42,7 +42,7 @@ BLANK[ \r\t\n\t\f]
 "}"	{ count(); return('}'); }
 ","	{ count(); return(','); }
 ":"   { count(); return(':'); }
-"="	{ count(); return('='); }
+"="	{ count(); return(ASSIGN); }
 "("	{ count(); return('('); }
 ")"	{ count(); return(')'); }
 "["	{ count(); return('['); }

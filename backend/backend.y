@@ -258,9 +258,9 @@ int main (int argc, char *argv[]) {
     do_variable_table_links(function_table, global_table);
     do_variable_offset(function_table);
 
-    variable_table_print(global_table);
-    function_table_print(function_table);
-    printf("\n\n---------------------\n\n");
+    //variable_table_print(global_table);
+    //function_table_print(function_table);
+    //printf("\n\n---------------------\n\n");
     asm_global_table(global_table);
     asm_function_table(function_table);
 

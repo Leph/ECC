@@ -749,7 +749,7 @@ void variable_print(variable_t* v)
     assert(v != NULL);
     type_print(v->type);
     if (v->name != NULL) {
-        printf(" %s{%d}", v->name, v->offset);
+        printf(" %s", v->name);
     }
     else {
         printf(" ?");
@@ -876,7 +876,12 @@ variable_t* variable_table_search_name(variable_table_t* t, char* name)
             return t->table[i];
         }
     }
-    return NULL;
+    if (t->parent != NULL) {
+        return variable_table_search_name(t->parent, name);
+    }
+    else {
+        return NULL;
+    }
 }
 
 /**

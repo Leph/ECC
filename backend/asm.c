@@ -55,7 +55,17 @@ void asm_block(block_t* b)
 {
     assert(b != NULL);
     /* TODO faire allocation des tableaux */
-    int i;
+    int i,j;
+    int size=1;
+    for(i=0;i<b->vt->size;i++){
+      if(b->vt->table[i]->dim > 0) {
+	for(j=0;j<b->vt->table[i]->dim;j++)
+	  size*=b->vt->table[i]->size_array[j];
+	
+	printf("\tmovl\t$%d, (%%esp)\n", size);
+      }
+    }
+    
     for (i=0;i<b->st->size;i++) {
         asm_statement(b->st->table[i], b->vt);
     }
@@ -140,6 +150,8 @@ char* asm_unary_expression(unary_expression_t* e, variable_table_t* t)
              strcpy(code, asm_value(e->value, t));
             break;
         case ARRAY_T:
+	  
+
             break;
         case FUNCTION_T:
             for (i=e->arguments->size-1;i>=0;i--) {

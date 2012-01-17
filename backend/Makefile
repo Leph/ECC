@@ -18,3 +18,6 @@ clean:
 	rm -f backend.c scanner_backend.c
 	rm -f backend.tab.h backend
 
+test: backend
+	./backend test.v2c
+

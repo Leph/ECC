@@ -127,8 +127,8 @@ selection_statement
 
 jump_statement
 : GOTO IDENTIFIER ';' { label_t* l = create_label($2); $$ = create_jump_goto(l); }
-| RETURN ';' { $$ = create_jump_return(); }
 | RETURN left_expression ';' { $$ = create_jump_return_exp($2); }
+| RETURN ';' { $$ = create_jump_return(); }
 ;
 
 expression_statement

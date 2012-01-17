@@ -21,7 +21,7 @@ BLANK[ \r\t\n\t\f]
  "goto "	{ count(); return(GOTO); }
  "if "		{ count(); return(IF); }
  "int "		{ count(); return(INT); }
- "return "	{ count(); return(RETURN); }
+ "return"	{ count(); return(RETURN); }
  "void "	{ count(); return(VOID); }
 
 {L}({L}|{D})*	{ count(); yylval.identifier = strdup(yytext); return(IDENTIFIER); }

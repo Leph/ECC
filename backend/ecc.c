@@ -729,6 +729,7 @@ variable_t* create_variable()
     v->dim = 0;
     v->size_array = NULL;
     v->offset = 0;
+    v->is_global = 0;
     return v;
 }
 void delete_variable(variable_t* v)
@@ -1062,6 +1063,9 @@ void do_variable_table_links(function_table_t* ft, variable_table_t* global_tabl
         ft->table[i]->params->parent = global_table;
         do_variable_table_links_block(ft->table[i]->block, ft->table[i]->params);
     }
+    for (i=0;i<global_table->size;i++) {
+        global_table->table[i]->is_global = 1;
+    }
 }
 
 int do_variable_table_block(block_t* b, int current_offset)
@@ -1091,7 +1095,12 @@ void do_variable_offset(function_table_t* ft)
             offset += variable_size(v);
             v->offset = offset;
         }
-        f->offset = do_variable_table_block(f->block, 0);
+        /** 
+         * L'offset commence à -4 pour ne pas écraser %ebp sauvegarder sur la pile
+         * f->offset = taille les varuableà allouer pour cette fonction
+         * on corrige +4 puisque l'on commence l'offset à -4
+         */
+        f->offset = do_variable_table_block(f->block, -REF_BYTES_LEN) + REF_BYTES_LEN;
     }
 }
 

@@ -214,6 +214,7 @@ struct variable_t
     int dim;
     int* size_array;
     int offset; /* Offset en octet par rapport à %ebp */
+    int is_global;
 };
 typedef struct variable_t variable_t;
 

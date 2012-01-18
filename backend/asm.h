@@ -12,5 +12,8 @@ char* asm_unary_expression(unary_expression_t* e, variable_table_t* t);
 char* asm_value(value_t* v, variable_table_t* t);
 void asm_jump(jump_t* j, variable_table_t* t);
 void asm_condition(condition_t* c, variable_table_t* t);
+void asm_array_alloc(variable_t* v);
+void asm_array_free(variable_t* v);
+void asm_variable_table_array_free(variable_table_t* t);
 
 #endif

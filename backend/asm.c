@@ -56,21 +56,19 @@ void asm_function(function_t* f)
 void asm_block(block_t* b)
 {
     assert(b != NULL);
-    /* TODO faire allocation des tableaux */
-    int i,j;
-    int size=1;
-    for(i=0;i<b->vt->size;i++){
-      if(b->vt->table[i]->dim > 0) {
-	for(j=0;j<b->vt->table[i]->dim;j++)
-	  size*=b->vt->table[i]->size_array[j];
-	
-	printf("\tmovl\t$%d, (%%esp)\n", size);
-      }
+    int i;
+    //Malloc array
+    for(i=0;i<b->vt->size;i++) {
+        if(b->vt->table[i]->dim > 0) {
+            asm_array_alloc(b->vt->table[i]);
+        }
     }
-    
+    //Generate asm
     for (i=0;i<b->st->size;i++) {
         asm_statement(b->st->table[i], b->vt);
     }
+    //Free array
+    asm_variable_table_array_free(b->vt);
 }
 
 void asm_statement(statement_t* s, variable_table_t* t)
@@ -161,7 +159,9 @@ char* asm_unary_expression(unary_expression_t* e, variable_table_t* t)
                 printf("\tpushl\t%s\n", value);
             }
             printf("\tcall\t%s\n", e->value->identifier);
-            printf("\taddl\t$%d, %%esp\n", e->arguments->size*4);
+            if (e->arguments->size > 0) {
+                printf("\taddl\t$%d, %%esp\n", e->arguments->size*4);
+            }
             sprintf(code, "%%eax");
             break;
     }
@@ -210,6 +210,7 @@ void asm_jump(jump_t* j, variable_table_t* t)
             printf("\tjmp\t%s\n", j->label);
             break;
         case RETURN_T:
+            asm_variable_table_array_free(t);
             printf("\tmovl\t%%ebp, %%esp\n");
             printf("\tpopl\t%%ebp\n");
             printf("\tret\n");
@@ -217,6 +218,7 @@ void asm_jump(jump_t* j, variable_table_t* t)
         case RETURN_EXP_T:
             strcpy(value, asm_unary_expression(j->exp, t));
             printf("\tmovl\t%s, %%eax\n", value);
+            asm_variable_table_array_free(t);
             printf("\tmovl\t%%ebp, %%esp\n");
             printf("\tpopl\t%%ebp\n");
             printf("\tret\n");
@@ -290,5 +292,51 @@ void asm_condition(condition_t* c, variable_table_t* t)
     }
     asm_statement(c->statement, t);
     printf("L_ECC_%d:\n", number);
+}
+
+void asm_array_alloc(variable_t* v)
+{
+    assert(v != NULL);
+    assert(v->dim > 0);
+    int j;
+    int size = type_size(v->type);
+    for(j=0;j<v->dim;j++) {
+        size *= v->size_array[j];
+    }
+    int align_size = 16*(size/16) + 16;
+    printf("\tpushl\t$%d\n", align_size);
+    printf("\tcall\tmalloc\n");
+    printf("\taddl\t$4, %%esp\n");
+    printf("\tmovl\t%%eax, %d(%%ebp)\n", v->offset);
+}
+
+void asm_array_free(variable_t* v)
+{
+    assert(v != NULL);
+    assert(v->dim > 0);
+    printf("\tpushl\t%d(%%ebp)\n", v->offset);
+    printf("\tcall\tfree\n");
+    printf("\taddl\t$4, %%esp\n");
+}
+
+void asm_variable_table_array_free(variable_table_t* t)
+{
+    assert(t != NULL);
+    int nb_table = 0;
+    variable_table_t* pt = t;
+    while (pt != NULL) {
+        nb_table++;
+        pt = pt->parent;
+    }
+    int i, j;
+    pt = t;
+    for (j=0;j<nb_table-2;j++) {
+        for (i=0;i<pt->size;i++) {
+            if (pt->table[i]->dim > 0) {
+                asm_array_free(pt->table[i]);
+            }
+        }
+        pt = pt->parent;
+    }
 }
 

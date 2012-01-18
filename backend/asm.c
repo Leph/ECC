@@ -104,8 +104,10 @@ void asm_expression(expression_t* e, variable_table_t* t)
             strcpy(right, asm_unary_expression(e->right, t));
             break;
         case INC_T:
-            strcpy(left, asm_unary_expression(e->left, t));
-            printf("\taddl\t$1, %s\n", left);
+            if (e->left->type != ARRAY_T) {
+                strcpy(left, asm_unary_expression(e->left, t));
+                printf("\taddl\t$1, %s\n", left);
+            }
             break;
         case DEC_T:
             strcpy(left, asm_unary_expression(e->left, t));
@@ -150,8 +152,9 @@ char* asm_unary_expression(unary_expression_t* e, variable_table_t* t)
              strcpy(code, asm_value(e->value, t));
             break;
         case ARRAY_T:
-	  
-
+            strcpy(value, asm_value(e->value, t));
+            printf("\tmovl\t%s, %%ebx\n", value); 
+            sprintf(code, "(%%ebx)");
             break;
         case FUNCTION_T:
             for (i=e->arguments->size-1;i>=0;i--) {

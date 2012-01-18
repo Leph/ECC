@@ -21,3 +21,8 @@ clean:
 test: backend
 	./backend test.v2c
 
+run: backend
+	./backend test.v2c > test.s
+	gcc -Wall test.s -o test
+	./test || echo ">>>" $$?
+

@@ -16,6 +16,12 @@ int main() {
     a = 0;
     a++;
     b = somme(a, pouet);
+    if (b == 42) {
+        int z;
+        z = b;
+        z++;
+        return z;
+    }
     return b;
 }
 

@@ -230,12 +230,14 @@ void asm_condition(condition_t* c, variable_table_t* t)
     assert(t != NULL);
     char e1[1024];
     char e2[1024];
+    int number = label_number;
+    label_number ++;
     switch (c->type) {
         case BOOL_T:
             strcpy(e1, asm_unary_expression(c->e1, t));
             printf("\tmovl\t%s, %%ecx\n", e1);
             printf("\tcmp\t%%ecx, $0\n");
-            printf("\tje\tL_ECC_%d\n", label_number);
+            printf("\tje\tL_ECC_%d\n", number);
             break;
         case L_T:
             strcpy(e1, asm_unary_expression(c->e1, t));
@@ -243,7 +245,7 @@ void asm_condition(condition_t* c, variable_table_t* t)
             printf("\tmovl\t%s, %%ecx\n", e1);
             printf("\tmovl\t%s, %%edx\n", e2);
             printf("\tcmp\t%%ecx, %%edx\n");
-            printf("\tjge\tL_ECC_%d\n", label_number);
+            printf("\tjge\tL_ECC_%d\n", number);
             break;
         case G_T:
             strcpy(e1, asm_unary_expression(c->e1, t));
@@ -251,7 +253,7 @@ void asm_condition(condition_t* c, variable_table_t* t)
             printf("\tmovl\t%s, %%ecx\n", e1);
             printf("\tmovl\t%s, %%edx\n", e2);
             printf("\tcmp\t%%ecx, %%edx\n");
-            printf("\tjle\tL_ECC_%d\n", label_number);
+            printf("\tjle\tL_ECC_%d\n", number);
             break;
         case LE_T:
             strcpy(e1, asm_unary_expression(c->e1, t));
@@ -259,7 +261,7 @@ void asm_condition(condition_t* c, variable_table_t* t)
             printf("\tmovl\t%s, %%ecx\n", e1);
             printf("\tmovl\t%s, %%edx\n", e2);
             printf("\tcmp\t%%ecx, %%edx\n");
-            printf("\tjg\tL_ECC_%d\n", label_number);
+            printf("\tjg\tL_ECC_%d\n", number);
             break;
         case GE_T:
             strcpy(e1, asm_unary_expression(c->e1, t));
@@ -267,7 +269,7 @@ void asm_condition(condition_t* c, variable_table_t* t)
             printf("\tmovl\t%s, %%ecx\n", e1);
             printf("\tmovl\t%s, %%edx\n", e2);
             printf("\tcmp\t%%ecx, %%edx\n");
-            printf("\tjl\tL_ECC_%d\n", label_number);
+            printf("\tjl\tL_ECC_%d\n", number);
             break;
         case EQ_T:
             strcpy(e1, asm_unary_expression(c->e1, t));
@@ -275,7 +277,7 @@ void asm_condition(condition_t* c, variable_table_t* t)
             printf("\tmovl\t%s, %%ecx\n", e1);
             printf("\tmovl\t%s, %%edx\n", e2);
             printf("\tcmp\t%%ecx, %%edx\n");
-            printf("\tjne\tL_ECC_%d\n", label_number);
+            printf("\tjne\tL_ECC_%d\n", number);
             break;
         case NE_T:
             strcpy(e1, asm_unary_expression(c->e1, t));
@@ -283,11 +285,10 @@ void asm_condition(condition_t* c, variable_table_t* t)
             printf("\tmovl\t%s, %%ecx\n", e1);
             printf("\tmovl\t%s, %%edx\n", e2);
             printf("\tcmp\t%%ecx, %%edx\n");
-            printf("\tje\tL_ECC_%d\n", label_number);
+            printf("\tje\tL_ECC_%d\n", number);
             break;
     }
-    printf("L_ECC_%d", label_number);
-    label_number++;
     asm_statement(c->statement, t);
+    printf("L_ECC_%d:\n", number);
 }
 

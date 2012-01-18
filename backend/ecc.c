@@ -1052,6 +1052,12 @@ void do_variable_table_links_block(block_t* b, variable_table_t* current)
         if (b->st->table[i]->type == BLOCK_T) {
             do_variable_table_links_block(b->st->table[i]->block, b->vt);
         }
+        else if (b->st->table[i]->type == COND_T) {
+            condition_t* c = b->st->table[i]->condition;
+            if (c->statement->type == BLOCK_T) {
+                do_variable_table_links_block(c->statement->block, b->vt);
+            }
+        }
     }
 }
 void do_variable_table_links(function_table_t* ft, variable_table_t* global_table)
@@ -1079,6 +1085,12 @@ int do_variable_table_block(block_t* b, int current_offset)
     for (i=0;i<b->st->size;i++) {
         if (b->st->table[i]->type == BLOCK_T) {
             offset = do_variable_table_block(b->st->table[i]->block, offset);
+        }
+        else if (b->st->table[i]->type == COND_T) {
+            condition_t* c = b->st->table[i]->condition;
+            if (c->statement->type == BLOCK_T) {
+                offset = do_variable_table_block(c->statement->block, offset);
+            }
         }
     }
     return offset;

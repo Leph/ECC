@@ -11,25 +11,19 @@ int somme(int a, int b) {
 
 void test() {
     int a;
-    int c[10][3];
     a = 1;
     return;
 }
 
-int main() {
-    int a;
-    int b;
-    test();
-    pouet = 41;
-    a = 0;
-    a++;
-    b = somme(a, pouet);
-    if (b == 42) {
-        int z;
-        z = b;
-        z++;
-        return z;
-    }
-    return b;
+void test2() {
+    float a;
+    a = 42.42;
+}
+
+float main() {
+    float a;
+    float b;
+    b++;
+    return a;
 }
 

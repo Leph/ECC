@@ -15,5 +15,19 @@ void asm_condition(condition_t* c, variable_table_t* t);
 void asm_array_alloc(variable_t* v);
 void asm_array_free(variable_t* v);
 void asm_variable_table_array_free(variable_table_t* t);
+type_t asm_get_type(unary_expression_t* e, variable_table_t* t);
 
+void asm_op_inc_int(unary_expression_t* e_left, variable_table_t* t);
+void asm_op_dec_int(unary_expression_t* e_left, variable_table_t* t);
+void asm_op_assign_int_int(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_add_int_int(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_sub_int_int(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_mul_int_int(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+
+void asm_op_inc_float(unary_expression_t* e_left, variable_table_t* t);
+void asm_op_dec_float(unary_expression_t* e_left, variable_table_t* t);
+void asm_op_assign_float_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_add_float_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_sub_float_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_mul_float_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 #endif

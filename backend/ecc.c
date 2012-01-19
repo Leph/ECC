@@ -15,6 +15,7 @@ void type_print(type_t type)
         case VOID_T: printf("void"); break;
         case INT_T: printf("int"); break;
         case FLOAT_T: printf("float"); break;
+        default: break;
     }
 }
 int type_size(type_t type)
@@ -1036,6 +1037,18 @@ void function_table_add(function_table_t* t, function_t* f)
     t->table = realloc(t->table, sizeof(function_t*)*t->size);
     assert(t->table != NULL);
     t->table[t->size-1] = f;
+}
+function_t* function_table_search_name(function_table_t* t, char* name)
+{
+    assert(t != NULL);
+    assert(name != NULL);
+    int i;
+    for (i=0;i<t->size;i++) {
+        if (strcmp(t->table[i]->name, name) == 0) {
+            return t->table[i];
+        }
+    }
+    return NULL;
 }
 
 /**

@@ -5,6 +5,7 @@
 
 #include "ecc.h"
 #include "asm.h"
+extern function_table_t* function_table;
 
 int label_number = 0;
 
@@ -97,45 +98,48 @@ void asm_expression(expression_t* e, variable_table_t* t)
 {
     assert(e != NULL);
     assert(t != NULL);
-    char left[1024];
     char right[1024];
+    type_t type_left;
+    type_t type_right;
+    if (e->left != NULL) {
+        type_left = asm_get_type(e->left, t);
+    }
+    if (e->right != NULL) {
+        type_right = asm_get_type(e->right, t);
+    }
     switch (e->type) {
         case NOP_T:
             strcpy(right, asm_unary_expression(e->right, t));
             break;
         case INC_T:
-            if (e->left->type != ARRAY_T) {
-                strcpy(left, asm_unary_expression(e->left, t));
-                printf("\taddl\t$1, %s\n", left);
-            }
+            if (type_left == INT_T) asm_op_inc_int(e->left, t);
+            else if (type_left == FLOAT_T) asm_op_inc_float(e->left, t);
+            else assert(0 == 42);
             break;
         case DEC_T:
-            strcpy(left, asm_unary_expression(e->left, t));
-            printf("\tsubl\t$1, %s\n", left);
+            if (type_left == INT_T) asm_op_dec_int(e->left, t);
+            else if (type_left == FLOAT_T) asm_op_dec_float(e->left, t);
+            else assert(0 == 42);
             break;
         case ASSIGN_T:
-            strcpy(left, asm_unary_expression(e->left, t));
-            strcpy(right, asm_unary_expression(e->right, t));
-            printf("\tmovl\t%s, %%ecx\n", right);
-            printf("\tmovl\t%%ecx, %s\n", left);
+            if (type_left == INT_T && type_right == INT_T) asm_op_assign_int_int(e->left, e->right, t);
+            else if (type_left == FLOAT_T && type_right == FLOAT_T) asm_op_assign_float_float(e->left, e->right, t);
+            else assert(0 == 42);
             break;
         case ADD_T:
-            strcpy(left, asm_unary_expression(e->left, t));
-            strcpy(right, asm_unary_expression(e->right, t));
-            printf("\tmovl\t%s, %%ecx\n", right);
-            printf("\taddl\t%%ecx, %s\n", left);
+            if (type_left == INT_T && type_right == INT_T) asm_op_add_int_int(e->left, e->right, t);
+            else if (type_left == FLOAT_T && type_right == FLOAT_T) asm_op_add_float_float(e->left, e->right, t);
+            else assert(0 == 42);
             break;
         case SUB_T:
-            strcpy(left, asm_unary_expression(e->left, t));
-            strcpy(right, asm_unary_expression(e->right, t));
-            printf("\tmovl\t%s, %%ecx\n", right);
-            printf("\tsubl\t%%ecx, %s\n", left);
+            if (type_left == INT_T && type_right == INT_T) asm_op_sub_int_int(e->left, e->right, t);
+            else if (type_left == FLOAT_T && type_right == FLOAT_T) asm_op_sub_float_float(e->left, e->right, t);
+            else assert(0 == 42);
             break;
         case MUL_T:
-            strcpy(left, asm_unary_expression(e->left, t));
-            strcpy(right, asm_unary_expression(e->right, t));
-            printf("\tmovl\t%s, %%ecx\n", right);
-            printf("\timul\t%%ecx, %s\n", left);
+            if (type_left == INT_T && type_right == INT_T) asm_op_mul_int_int(e->left, e->right, t);
+            else if (type_left == FLOAT_T && type_right == FLOAT_T) asm_op_mul_float_float(e->left, e->right, t);
+            else assert(0 == 42);
             break;
     }
 }
@@ -155,6 +159,7 @@ char* asm_unary_expression(unary_expression_t* e, variable_table_t* t)
             strcpy(value, asm_value(e->value, t));
             printf("\tmovl\t%s, %%ebx\n", value); 
             sprintf(code, "(%%ebx)");
+            //TODO
             break;
         case FUNCTION_T:
             for (i=e->arguments->size-1;i>=0;i--) {
@@ -197,7 +202,7 @@ char* asm_value(value_t* v, variable_table_t* t)
             sprintf(code, "$%d", v->const_int);
             break;
         case CONST_FLOAT_T:
-            sprintf(code, "$%f", v->const_float);
+            sprintf(code, "$0x%08x", *(int*)&v->const_float);
             break;
     }
     return code;
@@ -341,5 +346,206 @@ void asm_variable_table_array_free(variable_table_t* t)
         }
         pt = pt->parent;
     }
+}
+
+type_t asm_get_type(unary_expression_t* e, variable_table_t* t)
+{
+    assert(e != NULL);
+    assert(t != NULL);
+    variable_t* v;
+    function_t* f;
+    switch (e->type) {
+        case VALUE_T:
+            switch (e->value->type) {
+                case IDENTIFIER_T:
+                    v = variable_table_search_name(t, e->value->identifier);
+                    assert(v != NULL);
+                    return v->type;
+                    break;
+                case CONST_INT_T:
+                    return INT_T;
+                    break;
+                case CONST_FLOAT_T:
+                    return FLOAT_T;
+                    break;
+                default: 
+                    return 0; 
+                    break;
+            }
+            break;
+        case ARRAY_T:
+            v = variable_table_search_name(t, e->value->identifier);
+            assert(v != NULL);
+            if (v->dim == e->arguments->size) {
+                return v->type;
+            }
+            else if (e->arguments->size == v->dim -1) {
+                if (v->type == INT_T) {
+                    return INT_VECTOR_T;
+                }
+                else if (v->type == FLOAT_T) {
+                    return FLOAT_VECTOR_T;
+                }
+                else {
+                    assert(42 == 0);
+                    return 0;
+                }
+            }
+            else {
+                assert(42 == 0);
+                return 0;
+            }
+            break;
+        case FUNCTION_T:
+            f = function_table_search_name(function_table, e->value->identifier);
+            assert(f != NULL);
+            return f->type_return;
+            break;
+        default:
+            return 0;
+            break;
+    }
+}
+
+void asm_op_inc_int(unary_expression_t* e_left, variable_table_t* t)
+{
+    assert(e_left != NULL);
+    assert(t != NULL);
+    char left[1024];
+    strcpy(left, asm_unary_expression(e_left, t));
+    printf("\tadd\t$1, %s\n", left);
+}
+void asm_op_dec_int(unary_expression_t* e_left, variable_table_t* t)
+{
+    assert(e_left != NULL);
+    assert(t != NULL);
+    char left[1024];
+    strcpy(left, asm_unary_expression(e_left, t));
+    printf("\tsub\t$1, %s\n", left);
+}
+void asm_op_assign_int_int(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
+{
+    assert(e_left != NULL);
+    assert(e_right != NULL);
+    assert(t != NULL);
+    char left[1024];
+    char right[1024];
+    strcpy(left, asm_unary_expression(e_left, t));
+    strcpy(right, asm_unary_expression(e_right, t));
+    printf("\tmovl\t%s, %%ecx\n", right);
+    printf("\tmovl\t%%ecx, %s\n", left);
+}
+void asm_op_add_int_int(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
+{
+    assert(e_left != NULL);
+    assert(e_right != NULL);
+    assert(t != NULL);
+    char left[1024];
+    char right[1024];
+    strcpy(left, asm_unary_expression(e_left, t));
+    strcpy(right, asm_unary_expression(e_right, t));
+    printf("\tmovl\t%s, %%ecx\n", right);
+    printf("\taddl\t%%ecx, %s\n", left);
+}
+void asm_op_sub_int_int(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
+{
+    assert(e_left != NULL);
+    assert(e_right != NULL);
+    assert(t != NULL);
+    char left[1024];
+    char right[1024];
+    strcpy(left, asm_unary_expression(e_left, t));
+    strcpy(right, asm_unary_expression(e_right, t));
+    printf("\tmovl\t%s, %%ecx\n", right);
+    printf("\tsubl\t%%ecx, %s\n", left);
+}
+void asm_op_mul_int_int(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
+{
+    assert(e_left != NULL);
+    assert(e_right != NULL);
+    assert(t != NULL);
+    char left[1024];
+    char right[1024];
+    strcpy(left, asm_unary_expression(e_left, t));
+    strcpy(right, asm_unary_expression(e_right, t));
+    printf("\tmovl\t%s, %%ecx\n", right);
+    printf("\timull\t%%ecx, %s\n", left);
+}
+
+void asm_op_inc_float(unary_expression_t* e_left, variable_table_t* t)
+{
+    assert(e_left != NULL);
+    assert(t != NULL);
+    char left[1024];
+    strcpy(left, asm_unary_expression(e_left, t));
+    printf("\tflds\t%s\n", left);
+    printf("\tfld1\n");
+    printf("\tfaddp\n");
+    printf("\tfstps\t%s\n", left);
+}
+void asm_op_dec_float(unary_expression_t* e_left, variable_table_t* t)
+{
+    assert(e_left != NULL);
+    assert(t != NULL);
+    char left[1024];
+    strcpy(left, asm_unary_expression(e_left, t));
+    printf("\tflds\t%s\n", left);
+    printf("\tfld1\n");
+    printf("\tfsubp\n");
+    printf("\tfstps\t%s\n", left);
+}
+void asm_op_assign_float_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
+{
+    assert(e_left != NULL);
+    assert(e_right != NULL);
+    assert(t != NULL);
+    char left[1024];
+    char right[1024];
+    strcpy(left, asm_unary_expression(e_left, t));
+    strcpy(right, asm_unary_expression(e_right, t));
+    printf("\tmovl\t%s, %%ecx\n", right);
+    printf("\tmovl\t%%ecx, %s\n", left);
+}
+void asm_op_add_float_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
+{
+    assert(e_left != NULL);
+    assert(e_right != NULL);
+    assert(t != NULL);
+    char left[1024];
+    char right[1024];
+    strcpy(left, asm_unary_expression(e_left, t));
+    strcpy(right, asm_unary_expression(e_right, t));
+    printf("\tflds\t%s\n", left);
+    printf("\tflds\t%s\n", right);
+    printf("\tfaddp\n");
+    printf("\tfstps\t%s\n", left);
+}
+void asm_op_sub_float_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
+{
+    assert(e_left != NULL);
+    assert(e_right != NULL);
+    assert(t != NULL);
+    char left[1024];
+    char right[1024];
+    strcpy(left, asm_unary_expression(e_left, t));
+    strcpy(right, asm_unary_expression(e_right, t));
+    printf("\tflds\t%s\n", right);
+    printf("\tflds\t%s\n", left);
+    printf("\tfsubp\n");
+    printf("\tfstps\t%s\n", left);
+}
+void asm_op_mul_float_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
+{
+    assert(e_left != NULL);
+    assert(e_right != NULL);
+    assert(t != NULL);
+    char left[1024];
+    char right[1024];
+    strcpy(left, asm_unary_expression(e_left, t));
+    strcpy(right, asm_unary_expression(e_right, t));
+    printf("\tflds\t%s\n", left);
+    printf("\tflds\t%s\n", right);
+    printf("\tfmulp\n");
+    printf("\tfstps\t%s\n", left);
 }
 

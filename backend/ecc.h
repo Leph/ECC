@@ -13,7 +13,7 @@
  * Types
  */
 
-enum type_t {VOID_T, INT_T, FLOAT_T};
+enum type_t {VOID_T, INT_T, FLOAT_T, INT_VECTOR_T, FLOAT_VECTOR_T};
 typedef enum type_t type_t;
 
 void type_print(type_t type);
@@ -298,6 +298,7 @@ function_table_t* create_function_table();
 void delete_function_table(function_table_t* t);
 void function_table_print(function_table_t* t);
 void function_table_add(function_table_t* t, function_t* f);
+function_t* function_table_search_name(function_table_t* t, char* name);
 
 /**
  * utils functions

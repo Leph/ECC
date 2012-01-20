@@ -1,24 +1,6 @@
 int main() {
-    float a;
-    float b;
-    float c;
-    a = 2.5;
-    b = 3.5;
-    print a;
-    print b;
-    c = a;
-    c += b;
-    print c;
-    c = a;
-    c -= b;
-    print c;
-    c = a;
-    c *= b;
-    print c;
-    c++;
-    print c;
-    c--;
-    print c;
+    int a[2][2][4];
+    a[0][1];
     return 0;
 }
 

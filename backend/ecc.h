@@ -226,6 +226,7 @@ void variable_set_name(variable_t* v, char* name);
 void variable_set_type(variable_t* v, type_t type);
 void variable_add_dim(variable_t* v, int size);
 int variable_size(variable_t* v);
+int variable_array_size_step(variable_t* v, int dim);
 
 /**
  * variables table

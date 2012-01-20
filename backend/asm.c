@@ -159,6 +159,7 @@ char* asm_unary_expression(unary_expression_t* e, variable_table_t* t)
     assert(t != NULL);
     static char code[1024];
     char value[1024];
+    variable_t* v;
     int i;
     switch (e->type) {
         case VALUE_T:
@@ -166,6 +167,23 @@ char* asm_unary_expression(unary_expression_t* e, variable_table_t* t)
             break;
         case ARRAY_T:
             strcpy(value, asm_value(e->value, t));
+            v = variable_table_search_name(t, e->value->identifier);
+            assert(v != NULL);
+
+            int offset = 0;
+            for (i=0;i<e->arguments->size;i++) {
+                int j;
+                int size = type_size(v->type);
+                for (j=v->dim-1;j>i;j--) {
+                    size *= v->size_array[j];
+                    if (j == v->dim-1) {
+                        size = 16*(size/16) + 16;
+                    }
+                }
+                offset += size*e->arguments->values[i]->const_int;
+            }
+            printf("===> %d\n", offset);
+
             printf("\tmovl\t%s, %%ebx\n", value); 
             sprintf(code, "(%%ebx)");
             //TODO
@@ -317,11 +335,13 @@ void asm_array_alloc(variable_t* v)
     assert(v->dim > 0);
     int j;
     int size = type_size(v->type);
-    for(j=0;j<v->dim;j++) {
+    for(j=v->dim-1;j>=0;j--) {
         size *= v->size_array[j];
+        if (j == v->dim-1) {
+            size = 16*(size/16) + 16;
+        }
     }
-    int align_size = 16*(size/16) + 16;
-    printf("\tpushl\t$%d\n", align_size);
+    printf("\tpushl\t$%d\n", size);
     printf("\tcall\tmalloc\n");
     printf("\taddl\t$4, %%esp\n");
     printf("\tmovl\t%%eax, %d(%%ebp)\n", v->offset);

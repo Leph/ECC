@@ -604,7 +604,8 @@ void asm_op_mul_float_float(unary_expression_t* e_left, unary_expression_t* e_ri
 }
 
 
-void asm_op_assign_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t){
+void asm_op_assign_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
+{
     assert(e_left != NULL);
     assert(e_right != NULL);
     char left[1024];
@@ -613,26 +614,22 @@ void asm_op_assign_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_r
     strcpy(right, asm_unary_expression(e_right, t));
     variable_t *t_left = variable_table_search_name(t, e_left->value->identifier); 
     variable_t *t_right = variable_table_search_name(t, e_right->value->identifier); 
-    int i;
-    int nb_op;
-    if(t_left->size_array[0]< t_right->size_array[0])
-	nb_op = t_left->size_array[0];
-    else
-	nb_op = t_right->size_array[0];
-    
-    if(nb_op % 4 == 0)
-	nb_op/=4;
-    else
-	nb_op=nb_op/4 + 1;
-    
-    for(i=0; i<nb_op; i++){
-	printf("\tmovups\t%d(%s), %d(%s)", i*4, right, i*4, left);
-    }
-    
 
+    int size;
+    if(t_left->size_array[0]< t_right->size_array[0])
+	size = t_left->size_array[0];
+    else
+	size = t_right->size_array[0];
+    
+    printf("\tmovl\t$%d, %%eax\n", size);
+    printf(".loopa:\n");
+    printf("\tmovups\t-16(%s,%%eax,4), -16(%s,%%eax,4)\n", right, left);
+    printf("\tsubl\t$4, %%eax\n");
+    printf("\tjnz .loopa %%eax\n");
 }
 
-void asm_op_sub_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t){
+void asm_op_sub_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
+{
     assert(e_left != NULL);
     assert(e_right != NULL);
     char left[1024];
@@ -641,23 +638,22 @@ void asm_op_sub_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_righ
     strcpy(right, asm_unary_expression(e_right, t));
     variable_t *t_left = variable_table_search_name(t, e_left->value->identifier); 
     variable_t *t_right = variable_table_search_name(t, e_right->value->identifier); 
-    int i;
-    int nb_op;
+    
+    int size;
     if(t_left->size_array[0]< t_right->size_array[0])
-	nb_op = t_left->size_array[0];
+	size = t_left->size_array[0];
     else
-	nb_op = t_right->size_array[0];
+	size = t_right->size_array[0];
     
-    if(nb_op % 4 == 0)
-	nb_op/=4;
-    else
-	nb_op=nb_op/4 + 1;
-    
-    for(i=0; i<nb_op; i++){
-	printf("\tmovups\t%d(%s), %d(%s)", i*4, right, i*4, left);
-    }
+    printf("\tmovl\t$%d, %%eax\n", size);
+    printf(".loopa:\n");
+    printf("\tsubps\t-16(%s,%%eax,4), -16(%s,%%eax,4)\n", right, left);
+    printf("\tsubl\t$4, %%eax\n");
+    printf("\tjnz .loops %%eax\n");
+
 }
-void asm_op_add_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t){
+void asm_op_add_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
+{
     assert(e_left != NULL);
     assert(e_right != NULL);
     char left[1024];
@@ -666,24 +662,22 @@ void asm_op_add_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_righ
     strcpy(right, asm_unary_expression(e_right, t));
     variable_t *t_left = variable_table_search_name(t, e_left->value->identifier); 
     variable_t *t_right = variable_table_search_name(t, e_right->value->identifier); 
-    int i;
-    int nb_op;
+    int size;
     if(t_left->size_array[0]< t_right->size_array[0])
-	nb_op = t_left->size_array[0];
+	size = t_left->size_array[0];
     else
-	nb_op = t_right->size_array[0];
+	size = t_right->size_array[0];
     
-    if(nb_op % 4 == 0)
-	nb_op/=4;
-    else
-	nb_op=nb_op/4 + 1;
-    
-    for(i=0; i<nb_op; i++){
-	printf("\tmovups\t%d(%s), %d(%s)", i*4, right, i*4, left);
-    }
+    printf("\tmovl\t$%d, %%eax\n", size);
+    printf(".loopa:\n");
+    printf("\taddps\t-16(%s,%%eax,4), -16(%s,%%eax,4)\n", right, left);
+    printf("\tsubl\t$4, %%eax\n");
+    printf("\tjnz .loopadd %%eax\n");
+
 }
-void asm_op_mul_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t){
-assert(e_left != NULL);
+void asm_op_mul_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
+{
+    assert(e_left != NULL);
     assert(e_right != NULL);
     char left[1024];
     char right[1024];
@@ -691,19 +685,30 @@ assert(e_left != NULL);
     strcpy(right, asm_unary_expression(e_right, t));
     variable_t *t_left = variable_table_search_name(t, e_left->value->identifier); 
     variable_t *t_right = variable_table_search_name(t, e_right->value->identifier); 
-    int i;
-    int nb_op;
+    int size;
     if(t_left->size_array[0]< t_right->size_array[0])
-	nb_op = t_left->size_array[0];
+	size = t_left->size_array[0];
     else
-	nb_op = t_right->size_array[0];
+	size = t_right->size_array[0];
     
-    if(nb_op % 4 == 0)
-	nb_op/=4;
-    else
-	nb_op=nb_op/4 + 1;
-    
-    for(i=0; i<nb_op; i++){
-        printf("\tmovups\t%d(%s), %d(%s)", i*4, right, i*4, left);
-    }
+    printf("\tmovl\t$%d, %%eax\n", size);
+    printf(".loopa:\n");
+    printf("\tmulps\t-16(%s,%%eax,4), -16(%s,%%eax,4)\n", right, left);
+    printf("\tsubl\t$4, %%eax\n");
+    printf("\tjnz .loopm %%eax\n");
 }
+
+
+void asm_op_mul_fvec_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
+{
+}
+void asm_op_add_fvec_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
+{
+}
+void asm_op_sub_fvec_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
+{
+}
+void asm_op_mul_assign_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
+{
+}
+

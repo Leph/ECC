@@ -1,29 +1,24 @@
-int function2();
-
-int pouet;
-
-int somme(int a, int b) {
-    int c;
-    c = a;
-    c += b;
-    return c;
-}
-
-void test() {
-    int a;
-    a = 1;
-    return;
-}
-
-void test2() {
-    float a;
-    a = 42.42;
-}
-
-float main() {
+int main() {
     float a;
     float b;
-    b++;
-    return a;
+    float c;
+    a = 2.5;
+    b = 3.5;
+    print a;
+    print b;
+    c = a;
+    c += b;
+    print c;
+    c = a;
+    c -= b;
+    print c;
+    c = a;
+    c *= b;
+    print c;
+    c++;
+    print c;
+    c--;
+    print c;
+    return 0;
 }
 

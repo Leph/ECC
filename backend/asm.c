@@ -584,11 +584,73 @@ void asm_op_mul_float_float(unary_expression_t* e_left, unary_expression_t* e_ri
 
 
 void asm_op_assign_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t){
+    assert(e_left != NULL);
+    assert(e_right != NULL);
+    char left[1024];
+    char right[1024];
+    strcpy(left, asm_unary_expression(e_left, t));
+    strcpy(right, asm_unary_expression(e_right, t));
+    variable_t *t_left = variable_table_search_name(t, e_left->value->identifier); 
+    int i;
+    int nb_op = t_left->size_array[0] / 4;
+    if(t_left->size_array[0] % 4 == 0)
+	nb_op += 1;
+    for(i=0; i<nb_op; i++){
+	printf("\tmovups\t%s, %s", right, left);
+	//deplacement de 4 octets
+    }
+    
+
 }
 
 void asm_op_sub_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t){
+    assert(e_left != NULL);
+    assert(e_right != NULL);
+    char left[1024];
+    char right[1024];
+    strcpy(left, asm_unary_expression(e_left, t));
+    strcpy(right, asm_unary_expression(e_right, t));
+    variable_t *t_left = variable_table_search_name(t, e_left->value->identifier); 
+    int i;
+    int nb_op = t_left->size_array[0] / 4;
+    if(t_left->size_array[0] % 4 == 0)
+	nb_op += 1;
+    for(i=0; i<nb_op; i++){
+	printf("\tsubps\t%s, %s", right, left);
+	//deplacement de 4 octets
+    }
 }
 void asm_op_add_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t){
+    assert(e_left != NULL);
+    assert(e_right != NULL);
+    char left[1024];
+    char right[1024];
+    strcpy(left, asm_unary_expression(e_left, t));
+    strcpy(right, asm_unary_expression(e_right, t));
+    variable_t *t_left = variable_table_search_name(t, e_left->value->identifier); 
+    int i;
+    int nb_op = t_left->size_array[0] / 4;
+    if(t_left->size_array[0] % 4 == 0)
+	nb_op += 1;
+    for(i=0; i<nb_op; i++){
+	printf("\taddps\t%s, %s", right, left);
+	//deplacement de 4 octets
+    }
 }
 void asm_op_mul_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t){
+assert(e_left != NULL);
+    assert(e_right != NULL);
+    char left[1024];
+    char right[1024];
+    strcpy(left, asm_unary_expression(e_left, t));
+    strcpy(right, asm_unary_expression(e_right, t));
+    variable_t *t_left = variable_table_search_name(t, e_left->value->identifier); 
+    int i;
+    int nb_op = t_left->size_array[0] / 4;
+    if(t_left->size_array[0] % 4 == 0)
+	nb_op += 1;
+    for(i=0; i<nb_op; i++){
+	printf("\tmulps\t%s, %s", right, left);
+	//deplacement de 4 octets
+    }
 }

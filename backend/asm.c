@@ -203,6 +203,11 @@ char* asm_unary_expression(unary_expression_t* e, variable_table_t* t)
     return code;
 }
 
+char *asm_array_next_bloc(unary_expression_t* e, variable_table_t* t)
+{
+
+}
+
 char* asm_value(value_t* v, variable_table_t* t)
 {
     assert(v != NULL);

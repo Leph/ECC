@@ -133,21 +133,25 @@ void asm_expression(expression_t* e, variable_table_t* t)
         case ASSIGN_T:
             if (type_left == INT_T && type_right == INT_T) asm_op_assign_int_int(e->left, e->right, t);
             else if (type_left == FLOAT_T && type_right == FLOAT_T) asm_op_assign_float_float(e->left, e->right, t);
+	    else if (type_left == FLOAT_VECTOR_T && type_right == FLOAT_VECTOR_T) asm_op_assign_fvec_fvec(e->left, e->right, t);
             else assert(0 == 42);
             break;
         case ADD_T:
             if (type_left == INT_T && type_right == INT_T) asm_op_add_int_int(e->left, e->right, t);
             else if (type_left == FLOAT_T && type_right == FLOAT_T) asm_op_add_float_float(e->left, e->right, t);
+	    else if (type_left == FLOAT_VECTOR_T && type_right == FLOAT_VECTOR_T) asm_op_add_fvec_fvec(e->left, e->right, t);
             else assert(0 == 42);
             break;
         case SUB_T:
             if (type_left == INT_T && type_right == INT_T) asm_op_sub_int_int(e->left, e->right, t);
             else if (type_left == FLOAT_T && type_right == FLOAT_T) asm_op_sub_float_float(e->left, e->right, t);
+	    else if (type_left == FLOAT_VECTOR_T && type_right == FLOAT_VECTOR_T) asm_op_sub_fvec_fvec(e->left, e->right, t);
             else assert(0 == 42);
             break;
         case MUL_T:
             if (type_left == INT_T && type_right == INT_T) asm_op_mul_int_int(e->left, e->right, t);
             else if (type_left == FLOAT_T && type_right == FLOAT_T) asm_op_mul_float_float(e->left, e->right, t);
+	    else if (type_left == FLOAT_VECTOR_T && type_right == FLOAT_VECTOR_T) asm_op_mul_fvec_fvec(e->left, e->right, t);
             else assert(0 == 42);
             break;
     }
@@ -644,7 +648,7 @@ void asm_op_sub_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_righ
 	size = t_right->size_array[0];
     
     printf("\tmovl\t$%d, %%eax\n", size);
-    printf(".loopa:\n");
+    printf(".loops:\n");
     printf("\tsubps\t-16(%s,%%eax,4), -16(%s,%%eax,4)\n", right, left);
     printf("\tsubl\t$4, %%eax\n");
     printf("\tjnz .loops %%eax\n");
@@ -667,7 +671,7 @@ void asm_op_add_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_righ
 	size = t_right->size_array[0];
     
     printf("\tmovl\t$%d, %%eax\n", size);
-    printf(".loopa:\n");
+    printf(".loopadd:\n");
     printf("\taddps\t-16(%s,%%eax,4), -16(%s,%%eax,4)\n", right, left);
     printf("\tsubl\t$4, %%eax\n");
     printf("\tjnz .loopadd %%eax\n");
@@ -690,7 +694,7 @@ void asm_op_mul_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_righ
 	size = t_right->size_array[0];
     
     printf("\tmovl\t$%d, %%eax\n", size);
-    printf(".loopa:\n");
+    printf(".loopm:\n");
     printf("\tmulps\t-16(%s,%%eax,4), -16(%s,%%eax,4)\n", right, left);
     printf("\tsubl\t$4, %%eax\n");
     printf("\tjnz .loopm %%eax\n");

@@ -549,3 +549,13 @@ void asm_op_mul_float_float(unary_expression_t* e_left, unary_expression_t* e_ri
     printf("\tfstps\t%s\n", left);
 }
 
+
+void asm_op_assign_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t){
+}
+
+void asm_op_sub_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t){
+}
+void asm_op_add_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t){
+}
+void asm_op_mul_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t){
+}

@@ -31,3 +31,11 @@ void asm_op_add_float_float(unary_expression_t* e_left, unary_expression_t* e_ri
 void asm_op_sub_float_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 void asm_op_mul_float_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 #endif
+
+
+void asm_op_assign_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_sub_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_add_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_mul_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+
+

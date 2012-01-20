@@ -42,6 +42,7 @@ void asm_op_add_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_righ
 void asm_op_mul_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 
 
+char *asm_assign_xmm0(unary_expression_t* fvec, unary_expression_t* flo, variable_table_t* t);
 void asm_op_mul_fvec_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 void asm_op_add_fvec_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 void asm_op_sub_fvec_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);

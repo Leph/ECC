@@ -182,11 +182,9 @@ char* asm_unary_expression(unary_expression_t* e, variable_table_t* t)
                 }
                 offset += size*e->arguments->values[i]->const_int;
             }
-            printf("===> %d\n", offset);
-
-            printf("\tmovl\t%s, %%ebx\n", value); 
+            printf("\tmovl\t%s, %%ebx\n", value);
+			printf("\taddl\t$%d, %%ebx\n", offset);
             sprintf(code, "(%%ebx)");
-            //TODO
             break;
         case FUNCTION_T:
             for (i=e->arguments->size-1;i>=0;i--) {

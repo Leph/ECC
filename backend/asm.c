@@ -13,6 +13,10 @@ void asm_global_table(variable_table_t* t)
 {
     assert(t != NULL);
     printf(".data\n");
+    printf("PRINT_INT:\n");
+    printf("\t.string\t\"%%d\\n\"\n");
+    printf("PRINT_FLOAT:\n");
+    printf("\t.string\t\"%%f\\n\"\n");
     int i;
     for (i=0;i<t->size;i++) {
         asm_global_variable(t->table[i]);
@@ -119,6 +123,11 @@ void asm_expression(expression_t* e, variable_table_t* t)
         case DEC_T:
             if (type_left == INT_T) asm_op_dec_int(e->left, t);
             else if (type_left == FLOAT_T) asm_op_dec_float(e->left, t);
+            else assert(0 == 42);
+            break;
+        case PRINT_T:
+            if (type_right == INT_T) asm_op_print_int(e->right, t);
+            else if (type_right == FLOAT_T) asm_op_print_float(e->right, t);
             else assert(0 == 42);
             break;
         case ASSIGN_T:
@@ -423,6 +432,17 @@ void asm_op_dec_int(unary_expression_t* e_left, variable_table_t* t)
     strcpy(left, asm_unary_expression(e_left, t));
     printf("\tsub\t$1, %s\n", left);
 }
+void asm_op_print_int(unary_expression_t* e_right, variable_table_t* t)
+{
+    assert(e_right != NULL);
+    assert(t != NULL);
+    char right[1024];
+    strcpy(right, asm_unary_expression(e_right, t));
+    printf("\tpushl\t%s\n", right);
+    printf("\tpushl\t$PRINT_INT\n");
+    printf("\tcall\tprintf\n");
+    printf("\taddl\t$8, %%esp\n");
+}
 void asm_op_assign_int_int(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
 {
     assert(e_left != NULL);
@@ -489,10 +509,23 @@ void asm_op_dec_float(unary_expression_t* e_left, variable_table_t* t)
     assert(t != NULL);
     char left[1024];
     strcpy(left, asm_unary_expression(e_left, t));
-    printf("\tflds\t%s\n", left);
     printf("\tfld1\n");
+    printf("\tflds\t%s\n", left);
     printf("\tfsubp\n");
     printf("\tfstps\t%s\n", left);
+}
+void asm_op_print_float(unary_expression_t* e_right, variable_table_t* t)
+{
+    assert(e_right != NULL);
+    assert(t != NULL);
+    char right[1024];
+    strcpy(right, asm_unary_expression(e_right, t));
+    printf("\tsubl\t$8, %%esp\n");
+    printf("\tflds\t%s\n", right);
+    printf("\tfstpl\t(%%esp)\n");
+    printf("\tpushl\t$PRINT_FLOAT\n");
+    printf("\tcall\tprintf\n");
+    printf("\taddl\t$12, %%esp\n");
 }
 void asm_op_assign_float_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
 {

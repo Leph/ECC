@@ -24,7 +24,7 @@ test: backend
 run: backend
 	./backend test.v2c > test.s
 	gcc -Wall test.s -o test -g -ggdb
-	./test || echo ">>>" $$?
+	./test
 
 .PHONY: test run clean
 

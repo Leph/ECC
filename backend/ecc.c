@@ -806,18 +806,6 @@ int variable_size(variable_t* v)
     }
     return size;
 }
-int variable_array_size_step(variable_t* v, int dim)
-{
-    assert(v != NULL);
-    assert(dim >= 0);
-    assert(v->dim >= dim);
-    int step = type_size(v->type);
-    int i;
-    for (i=0;i<dim;i++) {
-        step *= v->size_array[i];
-    }
-    return step;
-}
 
 /**
  * Variable table

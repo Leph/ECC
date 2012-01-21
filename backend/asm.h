@@ -34,16 +34,13 @@ void asm_op_add_float_float(unary_expression_t* e_left, unary_expression_t* e_ri
 void asm_op_sub_float_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 void asm_op_mul_float_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 
-void asm_op_assign_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
-void asm_op_sub_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
-void asm_op_add_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
-void asm_op_mul_fvec_fvec(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
-
-char *asm_assign_xmm0(unary_expression_t* fvec, unary_expression_t* flo, variable_table_t* t);
-void asm_op_mul_fvec_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
-void asm_op_add_fvec_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
-void asm_op_sub_fvec_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
-void asm_op_mul_assign_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_inc_fvect(unary_expression_t* e_left, variable_table_t* t);
+void asm_op_dec_fvect(unary_expression_t* e_left, variable_table_t* t);
+void asm_op_print_fvect(unary_expression_t* e_right, variable_table_t* t);
+void asm_op_assign_fvect_fvect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_add_fvect_fvect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_sub_fvect_fvect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_mul_fvect_fvect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 
 #endif
 

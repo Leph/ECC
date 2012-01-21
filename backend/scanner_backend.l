@@ -30,6 +30,7 @@ BLANK[ \r\t\n\t\f]
 {D}+"."{D}*    	{ count(); yylval.constant_float = atof(yytext); return(CONSTANT_FLOAT); }
 {D}+    	{ count(); yylval.constant_int = atoi(yytext); return(CONSTANT_INT); }
 
+"norm="	{ count(); return(NORM_ASSIGN); }
 "+="	{ count(); return(ADD_ASSIGN); }
 "-="	{ count(); return(SUB_ASSIGN); }
 "*="	{ count(); return(MUL_ASSIGN); }

@@ -13,31 +13,16 @@ int rec(int a) {
 
 int main() {
 
-    int a[5];
+    float a[4];
     int b[4];
-    int c[2];
     float f;	
-    a[0] = 1;
-    a[1] = 8;
-    a[2] = 2;
-    a[3] = 4;
-    a[4] = 6;
-    b[0] = 2;
-    b[1] = 2;
-    b[2] = 2;
-    b[3] = 3;
-
-    print a;
-    print b;
-    a /= b;
-    print a;
-
-    f=5.0;
-    print f;
-    sqrt f;
-    print f;    	
-
-
+    a[0] = 1.;
+    a[1] = 1.;
+    a[2] = 1.;
+    a[3] = 1.;
+    a[4] = 1.;
+    f norm= a;
+ 
     return 0;
 }
 

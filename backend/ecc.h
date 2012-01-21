@@ -82,7 +82,7 @@ void unary_expression_print(unary_expression_t* e);
  * expression
  */
 
-enum expression_type_t {NOP_T, INC_T, DEC_T, ASSIGN_T, ADD_T, SUB_T, MUL_T, DIV_T, PRINT_T, SQRT_T};
+enum expression_type_t {NOP_T, INC_T, DEC_T, ASSIGN_T, ADD_T, SUB_T, MUL_T, DIV_T, PRINT_T, SQRT_T, NORM_T};
 typedef enum expression_type_t expression_type_t;
 
 struct expression_t
@@ -99,6 +99,7 @@ expression_t* create_expression_dec(unary_expression_t* e1);
 expression_t* create_expression_print(unary_expression_t* e1);
 expression_t* create_expression_sqrt(unary_expression_t* e1);
 expression_t* create_expression_assign(unary_expression_t* e1, unary_expression_t* e2);
+expression_t* create_expression_norm(unary_expression_t* e1, unary_expression_t* e2);
 expression_t* create_expression_add(unary_expression_t* e1, unary_expression_t* e2);
 expression_t* create_expression_sub(unary_expression_t* e1, unary_expression_t* e2);
 expression_t* create_expression_mul(unary_expression_t* e1, unary_expression_t* e2);

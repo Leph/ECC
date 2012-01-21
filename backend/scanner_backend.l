@@ -23,6 +23,7 @@ BLANK[ \r\t\n\t\f]
  "int "		{ count(); return(INT); }
  "return"	{ count(); return(RETURN); }
  "print"	{ count(); return(PRINT); }
+ "sqrt"	        { count(); return(SQRT); }
  "void "	{ count(); return(VOID); }
 
 {L}({L}|{D})*	{ count(); yylval.identifier = strdup(yytext); return(IDENTIFIER); }

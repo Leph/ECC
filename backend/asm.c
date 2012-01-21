@@ -148,6 +148,10 @@ void asm_expression(expression_t* e, variable_table_t* t)
             else if (type_right == FLOAT_VECTOR_T) asm_op_print_fvect(e->right, t);
             else assert(0);
             break;
+        case SQRT_T:
+	    if (type_right == FLOAT_T) asm_op_sqrt_float(e->right, t);
+            else assert(0);
+            break;
         case ASSIGN_T:
             if (type_left == INT_T && type_right == INT_T) asm_op_assign_int_int(e->left, e->right, t);
             else if (type_left == FLOAT_T && type_right == FLOAT_T) asm_op_assign_float_float(e->left, e->right, t);
@@ -635,6 +639,16 @@ void asm_op_print_float(unary_expression_t* e_right, variable_table_t* t)
     printf("\tcall\tprintf\n");
     printf("\taddl\t$12, %%esp\n");
 }
+void asm_op_sqrt_float(unary_expression_t* e_right, variable_table_t* t)
+{
+    assert(e_right != NULL);
+    assert(t != NULL);
+    char right[1024];
+    strcpy(right, asm_unary_expression(e_right, t));
+    printf("\tflds\t%s\n", right);
+    printf("\tfsqrt\n");
+    printf("\tfstps\t%s\n", right);
+    }
 void asm_op_assign_float_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
 {
     assert(e_left != NULL);

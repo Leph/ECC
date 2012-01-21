@@ -229,6 +229,16 @@ expression_t* create_expression_print(unary_expression_t* e1)
     exp->right = e1;
     return exp;
 }
+expression_t* create_expression_sqrt(unary_expression_t* e1)
+{
+    assert(e1 != NULL);
+    expression_t* exp = malloc(sizeof(expression_t));
+    assert(exp != NULL);
+    exp->type = SQRT_T;
+    exp->left = NULL;
+    exp->right = e1;
+    return exp;
+}
 expression_t* create_expression_assign(unary_expression_t* e1, unary_expression_t* e2)
 {
     assert(e1 != NULL);
@@ -317,6 +327,9 @@ void expression_print(expression_t* e)
             break;
         case PRINT_T:
             printf("print ");
+            unary_expression_print(e->right);
+        case SQRT_T:
+            printf("sqrt ");
             unary_expression_print(e->right);
         case ASSIGN_T:
             unary_expression_print(e->left);

@@ -30,6 +30,7 @@ void asm_op_div_int_int(unary_expression_t* e_left, unary_expression_t* e_right,
 void asm_op_inc_float(unary_expression_t* e_left, variable_table_t* t);
 void asm_op_dec_float(unary_expression_t* e_left, variable_table_t* t);
 void asm_op_print_float(unary_expression_t* e_right, variable_table_t* t);
+void asm_op_sqrt_float(unary_expression_t* e_right, variable_table_t* t);
 void asm_op_assign_float_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 void asm_op_add_float_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 void asm_op_sub_float_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);

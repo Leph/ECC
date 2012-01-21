@@ -1,21 +1,27 @@
-int main() {
-    int a[5];
-    int b[5];
+int rec(int a) {
+    int b;
     int c;
-    int d;
-    c = 42;
-    d = 2;
-    d *= c;
-    print d;
-    a[0] = 42;
-    a[4] = 69;
-    b[0] = 2;
-    b[4] = 2;
-    print a;
+    if (a == 0) {
+        return 1;
+    }
+    b = a;
+    b--;
+    c = rec(b);
+    c *= a;
+    return c;
+}
+
+int main() {
+    int a;
+    int aa;
+    float b;
+    float bb;
+    a = 42;
+    b = a;
     print b;
-    a *= b;
-    print a;
-    print b;
+    bb = 69.69;
+    aa = bb;
+    print aa;
     return 0;
 }
 

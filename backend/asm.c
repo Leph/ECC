@@ -151,6 +151,8 @@ void asm_expression(expression_t* e, variable_table_t* t)
         case ASSIGN_T:
             if (type_left == INT_T && type_right == INT_T) asm_op_assign_int_int(e->left, e->right, t);
             else if (type_left == FLOAT_T && type_right == FLOAT_T) asm_op_assign_float_float(e->left, e->right, t);
+            else if (type_left == INT_T && type_right == FLOAT_T) asm_op_assign_int_float(e->left, e->right, t);
+            else if (type_left == FLOAT_T && type_right == INT_T) asm_op_assign_float_int(e->left, e->right, t);
             else if (type_left == INT_VECTOR_T && type_right == INT_VECTOR_T) asm_op_assign_ivect_ivect(e->left, e->right, t);
             else if (type_left == FLOAT_VECTOR_T && type_right == FLOAT_VECTOR_T) asm_op_assign_fvect_fvect(e->left, e->right, t);
             else assert(0);
@@ -1042,5 +1044,41 @@ void asm_op_mul_ivect_ivect(unary_expression_t* e_left, unary_expression_t* e_ri
     printf("\tsubl\t$1, %%eax\n");
     printf("\tcmp\t$0, %%eax\n");
     printf("\tjg\tL_ECC_%d\n", number);
+}
+
+void asm_int_to_float(char* in, char* out)
+{
+    assert(in != NULL);
+    assert(out != NULL);
+    printf("\tfildl\t%s\n", in);
+    printf("\tfstps\t%s\n", out);
+}
+void asm_float_to_int(char* in, char* out)
+{
+    assert(in != NULL);
+    assert(out != NULL);
+    printf("\tflds\t%s\n", in);
+    printf("\tfistpl\t%s\n", out);
+}
+
+void asm_op_assign_int_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
+{
+    assert(e_left != NULL);
+    assert(e_right != NULL);
+    assert(t != NULL);
+    asm_op_assign_float_float(e_left, e_right, t);
+    char left[1024];
+    strcpy(left, asm_unary_expression(e_left, t));
+    asm_float_to_int(left, left);
+}
+void asm_op_assign_float_int(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
+{
+    assert(e_left != NULL);
+    assert(e_right != NULL);
+    assert(t != NULL);
+    asm_op_assign_int_int(e_left, e_right, t);
+    char left[1024];
+    strcpy(left, asm_unary_expression(e_left, t));
+    asm_int_to_float(left, left);
 }
 

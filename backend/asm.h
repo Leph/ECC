@@ -53,5 +53,17 @@ void asm_op_add_ivect_ivect(unary_expression_t* e_left, unary_expression_t* e_ri
 void asm_op_sub_ivect_ivect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 void asm_op_mul_ivect_ivect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 void asm_op_div_ivect_ivect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+
+void asm_int_to_float(char* in, char* out);
+void asm_float_to_int(char* in, char* out);
+
+void asm_op_assign_int_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_assign_float_int(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+
+void asm_op_add_int_ivect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_add_float_fvect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_mul_int_ivect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_mul_float_fvect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+
 #endif
 

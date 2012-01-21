@@ -1,21 +1,35 @@
+int rec(int a) {
+    int b;
+    int c;
+    if (a == 0) {
+        return 1;
+    }
+    b = a;
+    b--;
+    c = rec(b);
+    c *= a;
+    return c;
+}
+
 int main() {
     int a[5];
-    int b[5];
-    int c;
-    int d;
-    c = 42;
-    d = 2;
-    d *= c;
-    print d;
-    a[0] = 42;
-    a[4] = 69;
+    int b[4];
+    int c[2];
+    a[0] = 1;
+    a[1] = 8;
+    a[2] = 2;
+    a[3] = 4;
+    a[4] = 6;
     b[0] = 2;
-    b[4] = 2;
+    b[1] = 2;
+    b[2] = 2;
+    b[3] = 3;
+
     print a;
     print b;
-    a *= b;
+    a /= b;
     print a;
-    print b;
+    	
     return 0;
 }
 

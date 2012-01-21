@@ -7,9 +7,3 @@ FLOAT VECTEUR - FLOAT/INT
 -=
 =
 
-INT - INT VECTEUR
-+=
-
-FLOAT - FLOAT VECTEUR
-a *= vecteur
-

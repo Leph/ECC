@@ -65,5 +65,7 @@ void asm_op_add_float_fvect(unary_expression_t* e_left, unary_expression_t* e_ri
 void asm_op_mul_int_ivect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 void asm_op_mul_float_fvect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 
+//void asm_op_print_imat(unary_expression_t* e_right, variable_table_t* t);
+
 #endif
 

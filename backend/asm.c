@@ -146,6 +146,7 @@ void asm_expression(expression_t* e, variable_table_t* t)
             else if (type_right == FLOAT_T) asm_op_print_float(e->right, t);
             else if (type_right == INT_VECTOR_T) asm_op_print_ivect(e->right, t);
             else if (type_right == FLOAT_VECTOR_T) asm_op_print_fvect(e->right, t);
+            //else if (type_right == INT_MATRIX_T) asm_op_print_imat(e->right, t);
             else assert(0);
             break;
         case ASSIGN_T:
@@ -209,10 +210,10 @@ char* asm_unary_expression(unary_expression_t* e, variable_table_t* t)
             strcpy(value, asm_value(e->value, t));
             v = variable_table_search_name(t, e->value->identifier);
             assert(v != NULL);
-			assert(v->dim >= e->arguments->size);
-			for (i=0;i<e->arguments->size;i++) {
-				assert(e->arguments->values[i]->const_int<=v->size_array[i]);
-			}
+            assert(v->dim >= e->arguments->size);
+            for (i=0;i<e->arguments->size;i++) {
+                    assert(e->arguments->values[i]->const_int<=v->size_array[i]);
+            }
             int offset = 0;
             for (i=0;i<e->arguments->size;i++) {
                 int j;
@@ -226,7 +227,7 @@ char* asm_unary_expression(unary_expression_t* e, variable_table_t* t)
                 offset += size*e->arguments->values[i]->const_int;
             }
             printf("\tmovl\t%s, %%ebx\n", value);
-			printf("\taddl\t$%d, %%ebx\n", offset);
+	    printf("\taddl\t$%d, %%ebx\n", offset);
             type_t type = asm_get_type(e, t);
             if (type == INT_T || type == FLOAT_T) {
                 sprintf(code, "(%%ebx)");
@@ -388,7 +389,6 @@ void asm_array_alloc(variable_t* v)
             size = 16*(size/16) + 16;
         }
     }
-
     printf("\tpushl\t$%d\n", size);
     printf("\tpushl\t$16\n");
     printf("\tsubl\t$4, %%esp\n");
@@ -456,6 +456,18 @@ type_t asm_get_type(unary_expression_t* e, variable_table_t* t)
                             return 0;
                         }
                     }
+                    else if (v->dim == 2) {
+                        if (v->type == INT_T) {
+                            return INT_MATRIX_T;
+                        }
+                        else if (v->type == FLOAT_T) {
+                            return FLOAT_MATRIX_T;
+                        }
+                        else {
+                            assert(0);
+                            return 0;
+                        }
+                    }
                     else {
                         assert(0);
                         return 0;
@@ -478,12 +490,24 @@ type_t asm_get_type(unary_expression_t* e, variable_table_t* t)
             if (v->dim == e->arguments->size) {
                 return v->type;
             }
-            else if (e->arguments->size == v->dim -1) {
+            else if (e->arguments->size == v->dim-1) {
                 if (v->type == INT_T) {
                     return INT_VECTOR_T;
                 }
                 else if (v->type == FLOAT_T) {
                     return FLOAT_VECTOR_T;
+                }
+                else {
+                    assert(0);
+                    return 0;
+                }
+            }
+            else if (e->arguments->size == v->dim-2) {
+                if (v->type == INT_T) {
+                    return INT_MATRIX_T;
+                }
+                else if (v->type == FLOAT_T) {
+                    return FLOAT_MATRIX_T;
                 }
                 else {
                     assert(0);
@@ -599,7 +623,6 @@ void asm_op_div_int_int(unary_expression_t* e_left, unary_expression_t* e_right,
     printf("\tmovl\t%%eax, %s\n", left);
 }
 
-
 void asm_op_inc_float(unary_expression_t* e_left, variable_table_t* t)
 {
     assert(e_left != NULL);
@@ -704,7 +727,6 @@ void asm_op_div_float_float(unary_expression_t* e_left, unary_expression_t* e_ri
     printf("\tfdivp\n");
     printf("\tfstps\t%s\n", left);
 }
-
 
 void asm_op_inc_fvect(unary_expression_t* e_left, variable_table_t* t)
 {
@@ -1122,9 +1144,6 @@ void asm_op_mul_ivect_ivect(unary_expression_t* e_left, unary_expression_t* e_ri
     printf("\tcmp\t$0, %%eax\n");
     printf("\tjg\tL_ECC_%d\n", number);
 }
-
-
-
 void asm_op_div_ivect_ivect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
 {
     assert(e_left != NULL);
@@ -1153,7 +1172,6 @@ void asm_op_div_ivect_ivect(unary_expression_t* e_left, unary_expression_t* e_ri
     printf("\tidivl\t(%%ebx)\n");
     printf("\tmovl\t%%eax, (%%ecx)\n");
     printf("\tpopl %%eax\n");
-  
     printf("\taddl\t$4, %%ebx\n");
     printf("\taddl\t$4, %%ecx\n");
     printf("\tsubl\t$1, %%eax\n");
@@ -1161,6 +1179,7 @@ void asm_op_div_ivect_ivect(unary_expression_t* e_left, unary_expression_t* e_ri
     printf("\tjg\tL_ECC_%d\n", number);
 
 }
+
 void asm_int_to_float(char* in, char* out)
 {
     assert(in != NULL);
@@ -1302,4 +1321,43 @@ void asm_op_mul_float_fvect(unary_expression_t* e_left, unary_expression_t* e_ri
     printf("\tfstps\t%s\n", left);
 }
 
+/*void asm_op_print_imat(unary_expression_t* e_right, variable_table_t* t)
+{
+    assert(e_right != NULL);
+    assert(t != NULL);
+    char right[1024];
+    strcpy(right, asm_unary_expression(e_right, t));
+    printf("\tmovl\t%s, %%ebx\n", right);
+    variable_t *v_right = variable_table_search_name(t, e_right->value->identifier);
+    assert(v_right != NULL);
+    int size = v_right->size_array[v_right->dim-1];
+    int size_ext = v_right->size_array[v_right->dim-2];
+    printf("\tpushl\t$0\n");
+    int number2 = label_number;
+    label_number++;
+    printf("L_ECC_%d:\n", number2);
+
+    printf("\tmovl\t$%d, %%eax\n", size);
+    int number = label_number;
+    label_number++;
+    printf("L_ECC_%d:\n", number);
+    printf("\tpushl\t%%eax\n");
+    printf("\tpushl\t(%%ebx)\n");
+    printf("\tpushl\t$PRINT_INT_VECT\n");
+    printf("\tcall\tprintf\n");
+    printf("\taddl\t$8, %%esp\n");
+    printf("\tpopl\t%%eax\n");
+    printf("\taddl\t$4, %%ebx\n");
+    printf("\tsubl\t$1, %%eax\n");
+    printf("\tcmp\t$0, %%eax\n");
+    printf("\tjg\tL_ECC_%d\n", number);
+    printf("\tpushl\t$PRINT_ENDL\n");
+    printf("\tcall\tprintf\n");
+    printf("\taddl\t$4, %%esp\n");
+
+    printf("\taddl\t$%d, (%%esp)\n", size);
+    printf("\tcmp\t$%d, (%%esp)\n", size*size_ext);
+    printf("\tjl\tL_ECC_%d\n", number2);
+    printf("\taddl\t$4, %%esp\n");
+}*/
 

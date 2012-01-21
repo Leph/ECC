@@ -12,24 +12,6 @@ int rec(int a) {
 }
 
 int main() {
-    int a[5];
-    int b[4];
-    int c[2];
-    a[0] = 1;
-    a[1] = 8;
-    a[2] = 2;
-    a[3] = 4;
-    a[4] = 6;
-    b[0] = 2;
-    b[1] = 2;
-    b[2] = 2;
-    b[3] = 3;
-
-    print a;
-    print b;
-    a /= b;
-    print a;
-    	
     return 0;
 }
 

@@ -13,7 +13,7 @@
  * Types
  */
 
-enum type_t {VOID_T, INT_T, FLOAT_T, INT_VECTOR_T, FLOAT_VECTOR_T};
+enum type_t {VOID_T, INT_T, FLOAT_T, INT_VECTOR_T, FLOAT_VECTOR_T, INT_MATRIX_T, FLOAT_MATRIX_T};
 typedef enum type_t type_t;
 
 void type_print(type_t type);

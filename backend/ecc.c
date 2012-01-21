@@ -273,6 +273,20 @@ expression_t* create_expression_mul(unary_expression_t* e1, unary_expression_t* 
     exp->right = e2;
     return exp;
 }
+
+expression_t* create_expression_div(unary_expression_t* e1, unary_expression_t* e2)
+{
+    assert(e1 != NULL);
+    assert(e2 != NULL);
+    expression_t* exp = malloc(sizeof(expression_t));
+    assert(exp != NULL);
+    exp->type = DIV_T;
+    exp->left = e1;
+    exp->right = e2;
+    return exp;
+}
+
+
 void delete_expression(expression_t* e)
 {
     assert(e != NULL);
@@ -324,6 +338,12 @@ void expression_print(expression_t* e)
             printf(" *= ");
             unary_expression_print(e->right);
             break;
+        case DIV_T:
+            unary_expression_print(e->left);
+            printf(" /= ");
+            unary_expression_print(e->right);
+            break;
+
     }
 }
 

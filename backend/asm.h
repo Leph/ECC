@@ -25,6 +25,7 @@ void asm_op_assign_int_int(unary_expression_t* e_left, unary_expression_t* e_rig
 void asm_op_add_int_int(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 void asm_op_sub_int_int(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 void asm_op_mul_int_int(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_div_int_int(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 
 void asm_op_inc_float(unary_expression_t* e_left, variable_table_t* t);
 void asm_op_dec_float(unary_expression_t* e_left, variable_table_t* t);
@@ -33,6 +34,7 @@ void asm_op_assign_float_float(unary_expression_t* e_left, unary_expression_t* e
 void asm_op_add_float_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 void asm_op_sub_float_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 void asm_op_mul_float_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_div_float_float(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 
 void asm_op_inc_fvect(unary_expression_t* e_left, variable_table_t* t);
 void asm_op_dec_fvect(unary_expression_t* e_left, variable_table_t* t);
@@ -41,6 +43,7 @@ void asm_op_assign_fvect_fvect(unary_expression_t* e_left, unary_expression_t* e
 void asm_op_add_fvect_fvect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 void asm_op_sub_fvect_fvect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 void asm_op_mul_fvect_fvect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_div_fvect_fvect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 
 void asm_op_inc_ivect(unary_expression_t* e_left, variable_table_t* t);
 void asm_op_dec_ivect(unary_expression_t* e_left, variable_table_t* t);
@@ -49,5 +52,6 @@ void asm_op_assign_ivect_ivect(unary_expression_t* e_left, unary_expression_t* e
 void asm_op_add_ivect_ivect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 void asm_op_sub_ivect_ivect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 void asm_op_mul_ivect_ivect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_div_ivect_ivect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 #endif
 

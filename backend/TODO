@@ -1,29 +1,5 @@
 Opérations :
 
-INT/FLOAT/FLOT VECTEUR
-++
---
-
-INT - INT
-=
-+=
--=
-*=
-
-FLOAT - FLOAT
-=
-+=
--=
-*=
-
-FLOAT VECTEUR(a) - FLOAT VECTEUR(b)
-=
-+=
--=
-*=
-(champ à champ)
-
-
 
 FLOAT VECTEUR - FLOAT/INT
 *=

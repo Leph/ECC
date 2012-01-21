@@ -1,33 +1,21 @@
 int main() {
-    float a[5];
-    float b[5];
- 
-    a[0] = 0.0;
-    a[1] = 0.0;
-    b[0] = 0.0;
-    b[1] = 0.0;
-    
-    a[0] = 42.42;
-    a[1] = 69.69;
-    a[4] = 3.0;
-
-    b = a;
-    
+    int a[5];
+    int b[5];
+    int c;
+    int d;
+    c = 42;
+    d = 2;
+    d *= c;
+    print d;
+    a[0] = 42;
+    a[4] = 69;
+    b[0] = 2;
+    b[4] = 2;
     print a;
     print b;
-    a--; 
+    a *= b;
     print a;
     print b;
-    a += b;
-    print a;
-    print b;
-    a -= b;
-    print a;
-    print b;
-    b *= b;
-    print a;
-    print b;
-
     return 0;
 }
 

@@ -42,5 +42,12 @@ void asm_op_add_fvect_fvect(unary_expression_t* e_left, unary_expression_t* e_ri
 void asm_op_sub_fvect_fvect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 void asm_op_mul_fvect_fvect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 
+void asm_op_inc_ivect(unary_expression_t* e_left, variable_table_t* t);
+void asm_op_dec_ivect(unary_expression_t* e_left, variable_table_t* t);
+void asm_op_print_ivect(unary_expression_t* e_right, variable_table_t* t);
+void asm_op_assign_ivect_ivect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_add_ivect_ivect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_sub_ivect_ivect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_mul_ivect_ivect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 #endif
 

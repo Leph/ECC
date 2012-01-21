@@ -12,16 +12,24 @@ int rec(int a) {
 }
 
 int main() {
-    int a;
-    int aa;
-    float b;
-    float bb;
-    a = 42;
-    b = a;
+    int a[5];
+    int b;
+    int c[2];
+    a[0] = 1;
+    a[1] = 1;
+    a[2] = 2;
+    a[3] = 1;
+    a[4] = 3;
+    b = 42;
+    c[1] = 42;
+    print a;
     print b;
-    bb = 69.69;
-    aa = bb;
-    print aa;
+    print c[1];
+    b += a;
+    c[1] += a;
+    print a;
+    print b;
+    print c[1];
     return 0;
 }
 

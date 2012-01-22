@@ -299,8 +299,13 @@ char* asm_value(value_t* v, variable_table_t* t)
             tmp = variable_table_search_name(t, v->identifier);
             assert(tmp != NULL);
             if (tmp->is_global) {
-                sprintf(code, "%s", tmp->name);
-            }
+		if (tmp->dim == 0) {
+		    sprintf(code, "%s", tmp->name);
+		}
+		else {
+		    sprintf(code, "$%s", tmp->name);
+		}
+	    }
             else {
                 if (tmp->offset != 0) {
                     sprintf(code, "%d(%%ebp)", tmp->offset);

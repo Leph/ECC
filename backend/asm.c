@@ -229,7 +229,7 @@ char* asm_unary_expression(unary_expression_t* e, variable_table_t* t)
             assert(v != NULL);
             assert(v->dim >= e->arguments->size);
             for (i=0;i<e->arguments->size;i++) {
-                    assert(e->arguments->values[i]->const_int<=v->size_array[i]);
+                    assert(e->arguments->values[i]->const_int<v->size_array[i]);
             }
             int offset = 0;
             for (i=0;i<e->arguments->size;i++) {

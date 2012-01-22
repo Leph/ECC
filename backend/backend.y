@@ -37,7 +37,7 @@
 %token<constant_int> CONSTANT_INT
 %token<constant_float> CONSTANT_FLOAT
 %token INC_OP DEC_OP LE_OP GE_OP EQ_OP NE_OP
-%token ASSIGN SUB_ASSIGN MUL_ASSIGN  DIV_ASSIGN  ADD_ASSIGN PRINT SQRT NORM_ASSIGN
+%token ASSIGN SUB_ASSIGN MUL_ASSIGN  DIV_ASSIGN  ADD_ASSIGN PRINT SQRT NORM_ASSIGN MAX_ASSIGN MIN_ASSIGN
 %token INT FLOAT VOID
 %token IF ELSE GOTO RETURN
 
@@ -109,6 +109,8 @@ expression
 | SQRT right_expression { $$ = create_expression_sqrt($2); }
 | left_expression ASSIGN right_expression { $$ = create_expression_assign($1, $3); }
 | left_expression NORM_ASSIGN right_expression { $$ = create_expression_norm($1, $3); }
+| left_expression MAX_ASSIGN right_expression { $$ = create_expression_max($1, $3); }
+| left_expression MIN_ASSIGN right_expression { $$ = create_expression_min($1, $3); }
 | left_expression ADD_ASSIGN right_expression { $$ = create_expression_add($1, $3); }
 | left_expression SUB_ASSIGN right_expression { $$ = create_expression_sub($1, $3); }
 | left_expression MUL_ASSIGN right_expression { $$ = create_expression_mul($1, $3); }

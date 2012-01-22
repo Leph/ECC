@@ -62,6 +62,8 @@ void asm_op_assign_int_float(unary_expression_t* e_left, unary_expression_t* e_r
 void asm_op_assign_float_int(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 
 void asm_op_add_int_ivect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_max_int_ivect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
+void asm_op_min_int_ivect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 void asm_op_add_float_fvect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 void asm_op_norm_float_fvect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);
 void asm_op_mul_int_ivect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t);

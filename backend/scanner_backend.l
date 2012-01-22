@@ -31,6 +31,8 @@ BLANK[ \r\t\n\t\f]
 {D}+    	{ count(); yylval.constant_int = atoi(yytext); return(CONSTANT_INT); }
 
 "norm="	{ count(); return(NORM_ASSIGN); }
+"max="	{ count(); return(MAX_ASSIGN); }
+"min="	{ count(); return(MIN_ASSIGN); }
 "+="	{ count(); return(ADD_ASSIGN); }
 "-="	{ count(); return(SUB_ASSIGN); }
 "*="	{ count(); return(MUL_ASSIGN); }

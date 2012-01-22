@@ -261,6 +261,28 @@ expression_t* create_expression_norm(unary_expression_t* e1, unary_expression_t*
     exp->right = e2;
     return exp;
 }
+expression_t* create_expression_max(unary_expression_t* e1, unary_expression_t* e2)
+{
+    assert(e1 != NULL);
+    assert(e2 != NULL);
+    expression_t* exp = malloc(sizeof(expression_t));
+    assert(exp != NULL);
+    exp->type = MAX_T;
+    exp->left = e1;
+    exp->right = e2;
+    return exp;
+}
+expression_t* create_expression_min(unary_expression_t* e1, unary_expression_t* e2)
+{
+    assert(e1 != NULL);
+    assert(e2 != NULL);
+    expression_t* exp = malloc(sizeof(expression_t));
+    assert(exp != NULL);
+    exp->type = MIN_T;
+    exp->left = e1;
+    exp->right = e2;
+    return exp;
+}
 expression_t* create_expression_add(unary_expression_t* e1, unary_expression_t* e2)
 {
     assert(e1 != NULL);
@@ -370,6 +392,14 @@ void expression_print(expression_t* e)
         case NORM_T:
             unary_expression_print(e->left);
             printf(" norm= ");
+            unary_expression_print(e->right);
+        case MAX_T:
+            unary_expression_print(e->left);
+            printf(" max= ");
+            unary_expression_print(e->right);
+        case MIN_T:
+            unary_expression_print(e->left);
+            printf(" min= ");
             unary_expression_print(e->right);
 
     }

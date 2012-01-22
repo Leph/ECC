@@ -1411,23 +1411,25 @@ void asm_op_max_float_fvect(unary_expression_t* e_left, unary_expression_t* e_ri
     printf("\tmovl\t$%d, %%eax\n", size-1);
     int number = label_number;
     label_number+=2;
-    printf("\tpushl\t(%%ecx)\n");
+    printf("\tmovl\t%%ecx, %%edx\n");
     printf("L_ECC_%d:\n", number);
     printf("\taddl\t$4, %%ecx\n");
     printf("\tsubl\t$1, %%eax\n");
-    printf("\tflds\t(%%esp)\n");
+    printf("\tflds\t(%%edx)\n");
     printf("\tflds\t(%%ecx)\n");
     printf("\tfxch\t%%st(1)\n");
     printf("\tfucomip\t%%st(1), %%st\n");
     printf("\tfstp\t%%st(0)\n");
     printf("\tseta\t%%al\n");
     printf("\ttestb\t%%al, %%al\n");
-    printf("\tje\tL_ECC_%d\n", number+1);
-    printf("\tmovl\t(%%ecx), %%esp\n");
+    printf("\tjne\tL_ECC_%d\n", number+1);
+    printf("\tmovl\t%%ecx, %%edx\n");
     printf("L_ECC_%d:\n", number+1);
     printf("\tcmp\t$0, %%eax\n");
     printf("\tjg\tL_ECC_%d\n", number);
-    printf("\tpopl\t%s\n", left);
+    printf("\tmovl\t(%%edx), %%ecx\n");
+    printf("\tmovl\t%%ecx, %s\n", left);
+
 }
 void asm_op_min_float_fvect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
 {
@@ -1446,20 +1448,24 @@ void asm_op_min_float_fvect(unary_expression_t* e_left, unary_expression_t* e_ri
     printf("\tmovl\t$%d, %%eax\n", size-1);
     int number = label_number;
     label_number+=2;
-    printf("\tflds\t(%%ecx)\n");
+    printf("\tmovl\t%%ecx, %%edx\n");
     printf("L_ECC_%d:\n", number);
     printf("\taddl\t$4, %%ecx\n");
     printf("\tsubl\t$1, %%eax\n");
+    printf("\tflds\t(%%edx)\n");
     printf("\tflds\t(%%ecx)\n");
-    printf("\tfucomp\n");
-    printf("\tfnstsw\t%%ax\n");
-    printf("\tsahf\n");
-    printf("\tjbe\tL_ECC_%d\n", number+1);
-    printf("\tmovl\t(%%ecx), %%edx\n");
+    printf("\tfxch\t%%st(1)\n");
+    printf("\tfucomip\t%%st(1), %%st\n");
+    printf("\tfstp\t%%st(0)\n");
+    printf("\tseta\t%%al\n");
+    printf("\ttestb\t%%al, %%al\n");
+    printf("\tje\tL_ECC_%d\n", number+1);
+    printf("\tmovl\t%%ecx, %%edx\n");
     printf("L_ECC_%d:\n", number+1);
     printf("\tcmp\t$0, %%eax\n");
     printf("\tjg\tL_ECC_%d\n", number);
-    printf("\tmovl\t%%edx, %s\n", left);
+    printf("\tmovl\t(%%edx), %%ecx\n");
+    printf("\tmovl\t%%ecx, %s\n", left);
 }
 void asm_op_mul_int_ivect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
 {

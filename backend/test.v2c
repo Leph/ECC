@@ -16,13 +16,13 @@ int main() {
     float a[4];
     float b;
     float c;	
-    a[0] = 5.;
-    a[1] = 1.;
+    a[0] = 9.;
+    a[1] = 2.;
     a[2] = 15.;
     a[3] = 11.;
     a[4] = 14.;
     c max= a;
-    //b min= a;
+    b min= a;
     print a;
     print c;
     print b;

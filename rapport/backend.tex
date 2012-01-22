@@ -1,0 +1,101 @@
+\documentclass{article}
+
+\title{Projet de Compilation, Backend}
+\author{Lun Juang, Quentin Rouxel}
+\date{23/01/2012}
+
+\begin{document}
+\maketitle{}
+
+\section{Introduction}
+
+L'objectif de ce projet était la réalisation d'un petit compilateur basé sur un langage proche du C et orienté vectoriel.
+Nous nous sommes attaché à l'écriture du backend de ce compilateur. A partir d'un langage intermédiare dont la syntaxe et la sémantique
+a préalablement été vérifié par le frontend, il s'agissait de générer le code assembleur correspondant et à destination d'une architecture
+x86, 32 bits.
+
+\section{Langage intermédiare}
+
+\subsection{Réécriture de la grammaire}
+
+Il s'est avéré que le fichier yacc implémentant la grammaire du langage intermédiare qui était fournie comportait quelque erreurs.
+Plus exactement, la grammaire acceptait des codes qui ne faisait clairement pas partie ni du langage d'entrée, ni du langage intermédiaire.
+Pour ne pas avoir a gérer des erreurs syntaxiques, nous avons choisi de réécrire en grande partie la grammaire 
+pour d'une part, la rendre plus strict, plus cohérente avec la langage intermédiare utilisé ici et d'autre part un peu plus simple à
+utilisé dans le cadre de l'arbre syntaxique.
+
+\subsection{Utilisation de Lex et Yacc}
+
+Nous nous somme basé sur ce document pour comprendre le fonctionnement détailler de Lex et de Yacc.
+http://www.scribd.com/doc/8669780/Lex-yacc-Tutorial
+L'instruction union de yacc permet de spécifier le type des valeurs contenue dans l'arbre syntaxique. Puis la déclaration
+\%token<nom-type> (respectivement \%type<nom-type>) permet de définir le champ à utiliser dans le union pour atteindre la valeur des token, 
+respectivement des règle de la grammaire.
+
+\subsection{Structure de donnée}
+
+Au lieu de générer le code assembleur directement dans les règles sémantique de Yacc, nous avons préféréé nous abstraire du parcours 
+postfixe assez contraingnant de l'arbre syntaxique. ce parcours est imposé par l'algorithme réalisant n'analyse syntaxique. Nous avons
+pour ce faire recréé la structure complète de arbre syntaxique afin de la manipuler plus simplement par la suite. Ce choix s'explique 
+également par la nécessite de pouvoir manipuler le code si par la suite, nous voulions faire des optimisation dessus.
+Le fichier ecc.h et ecc.c contiennent respectivement la définition et l'implémentation de cette structure de l'arbre syntaxique.
+Les règles sémantiques associé à chaque règle de la grammaire ont alors pour role de construire la représentation du code et de le faire
+remonter par l'arbre syntaxique.
+
+Nottons ici que l'utilisation d'un langage orienté objet aurrai simplifier cette construction fastidieuse.
+
+Deux opération importante sont effectué après la construction de la structures de données et avant la génération du code : 
+le chainage des tables de variables et le calcul des offsets pour chaque variable.
+Il s'agit pour le premier de lier se qui nous sert de table de symbole pour les variables à la table englobante.
+Pour le deuxième, on calcul par rapport à \%epb, le décalage à effectuer sur la pile pour accéder à la variable donnnée. Positif 
+pour les arguments d'une fonction, négatif pour les variables locales.
+
+\section{Génération du code assembleur}
+
+\subsection{Assembleur}
+\subsection{Gestions des variables et tableaux}
+
+Comme sous entendu précédement, toutes les variables, arguments et locales sont stocké quelque part sur la pile.
+\subsection{Opérations implémentées}
+
+
+
+\section{Difficultés rencontrés}
+-> utilisation Lex/Yacc
+-> utilisation fpu, doc, conversion entier floatant
+-> SSE : alignement et padding
+-> gestion de la pile
+-> cas particulier, tableaux global
+-> difficile à débugé
+-> manque de structuration du code -> meilleir réfléxion nécessaire (modularité difficile avec machine à état) -> structure nécessaire
+
+\section{Conclusion}
+
+\end{document}
+
+\begin{comment}
+-> grammaire : en partie réécriture
+-> utilisation de Lex et Yac (struct donnée)
+-> Structure de données : enregistrement intégral de l'arbre syntaxique
+-> Structure du code, génération de l'asm après 
+
+-> Point technique : chainage table variable, calcul des offsets, ...
+
+-> Non gestion des erreurs (réécriture grammaire)
+
+-> Génération de l'assembleur
+-> protocole d'appel
+-> gestion de la pile
+-> Allocation/désaloccation
+-> utilisation du fpu
+-> utilisation de sse
+-> Opération implémentée
+
+-> Limitation : pas d'optimisation de la gestion des registres (ou non traitées)
+-> pas d'alignement de la pile
+-> op non implémenté
+
+-> Test et usage
+
+\end{comment}
+

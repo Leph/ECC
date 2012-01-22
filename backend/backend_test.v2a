@@ -8,6 +8,7 @@ float fvect_d1_global[5];
 int ivect_d2_global[10][10];
 float fvect_d2_global[3][10];
 
+float fvect_d3_global[1000][1000][1000];
 
 //fonction recursive
 int factoriel(int n)
@@ -23,7 +24,7 @@ int factoriel(int n)
     return j; 
 }
 
-
+//ajout des vecteurs de t2 dans ceux de t1
 void somme_fvect(float t1[3][8], float t2[3][10])
 {
     int i;
@@ -39,10 +40,13 @@ int main()
     int ivar_local;
     float fvar_local;
     float fvect_d2_local[3][8];
-
-    float f;
-    f = 0.;
-    f -= 5.5; 
+    float max;
+    float min;
+    float norm;
+    float somme;
+    /* float f; */
+    /* f = 0.; */
+    /* f -= 5.5;  */
 
     /* int k; */
     /* k = 1; */
@@ -52,7 +56,8 @@ int main()
     ivar_local = factoriel(5); //5!=120
     print ivar_local; //affiche 120
     print 0;//separation de l'affichage
-    //
+    
+    //initialisation des vecteurs
     fvect_d2_local[0]++;
     fvect_d2_local[1]++;
     fvect_d2_local[1]++;
@@ -62,21 +67,44 @@ int main()
     print fvect_d2_local[0];
     print fvect_d2_local[1];
     print fvect_d2_local[2];
-    print 0;//separation de l'affichage
+    print 1;//separation de l'affichage
     fvect_d2_global[0] ++ ;
-    //    fvect_d2_global[1] ++ ;
-    
+    fvect_d2_global[1] ++ ;
+    fvect_d2_global[2][4] = 25.6;
     
     print fvect_d2_global[0];
     print fvect_d2_global[1];
     print fvect_d2_global[2];
-    print 0;//separation de l'affichage
+    fvect_d2_local[1] += fvect_d2_global[1];
+    print fvect_d2_local[1];
+    print 2;//separation de l'affichage
     somme_fvect(fvect_d2_local, fvect_d2_global);
     print fvect_d2_local[0];
     print fvect_d2_local[1];
     print fvect_d2_local[2];
-    print 0;//separation de l'affichage
+    print 3;//separation de l'affichage
 
+    //multiplication
+    print fvect_d2_local[2];
+    print fvect_d2_local[1];
+    fvect_d2_local[2] *= fvect_d2_local[1];
+    print fvect_d2_local[2];
+    print 4;//separation de l'affichage
+    
+    //division
+    print fvect_d2_local[2];
+    print fvect_d2_local[1];
+    fvect_d2_local[2] /= fvect_d2_local[1];
+    print fvect_d2_local[2];
+    print 5;//separation de l'affichage
+    
+    norm norm= fvect_d2_local[0]; //sqrt(8)
+    print norm;
+    max max= fvect_d2_global[2]; //25.6
+    print max;
+    min min= fvect_d2_global[2]; //0.0
+    print min;
+    somme += fvect_d2_local[1]; //16.0
 
     return 0;
 }

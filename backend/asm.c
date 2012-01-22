@@ -371,7 +371,7 @@ void asm_condition(condition_t* c, variable_table_t* t)
             strcpy(e2, asm_unary_expression(c->e2, t));
             printf("\tmovl\t%s, %%ecx\n", e1);
             printf("\tmovl\t%s, %%edx\n", e2);
-            printf("\tcmp\t%%ecx, %%edx\n");
+            printf("\tcmp\t%%edx, %%ecx\n");
             printf("\tjge\tL_ECC_%d\n", number);
             break;
         case G_T:
@@ -379,7 +379,7 @@ void asm_condition(condition_t* c, variable_table_t* t)
             strcpy(e2, asm_unary_expression(c->e2, t));
             printf("\tmovl\t%s, %%ecx\n", e1);
             printf("\tmovl\t%s, %%edx\n", e2);
-            printf("\tcmp\t%%ecx, %%edx\n");
+            printf("\tcmp\t%%edx, %%ecx\n");
             printf("\tjle\tL_ECC_%d\n", number);
             break;
         case LE_T:
@@ -387,7 +387,7 @@ void asm_condition(condition_t* c, variable_table_t* t)
             strcpy(e2, asm_unary_expression(c->e2, t));
             printf("\tmovl\t%s, %%ecx\n", e1);
             printf("\tmovl\t%s, %%edx\n", e2);
-            printf("\tcmp\t%%ecx, %%edx\n");
+            printf("\tcmp\t%%edx, %%ecx\n");
             printf("\tjg\tL_ECC_%d\n", number);
             break;
         case GE_T:
@@ -395,7 +395,7 @@ void asm_condition(condition_t* c, variable_table_t* t)
             strcpy(e2, asm_unary_expression(c->e2, t));
             printf("\tmovl\t%s, %%ecx\n", e1);
             printf("\tmovl\t%s, %%edx\n", e2);
-            printf("\tcmp\t%%ecx, %%edx\n");
+            printf("\tcmp\t%%edx, %%ecx\n");
             printf("\tjl\tL_ECC_%d\n", number);
             break;
         case EQ_T:

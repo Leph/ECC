@@ -7,6 +7,7 @@ void asm_function_table(function_table_t* t);
 void asm_function(function_t* f);
 void asm_block(block_t* b);
 void asm_statement(statement_t* s, variable_table_t* t);
+void asm_label(label_t* l);
 void asm_expression(expression_t* e, variable_table_t* t);
 char* asm_unary_expression(unary_expression_t* e, variable_table_t* t);
 

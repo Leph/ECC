@@ -19,12 +19,12 @@ clean:
 	rm -f backend.tab.h backend
 
 test: backend
-	./backend test.v2c
+	./backend backend_test.v2a
 
 run: backend
-	./backend test.v2c > test.s
-	gcc -Wall test.s -o test -g -ggdb
-	./test
+	./backend backend_test.v2a > backend_test.s
+	gcc -Wall backend_test.s -o backend_test -g -ggdb
+	./backend_test
 
 .PHONY: test run clean
 

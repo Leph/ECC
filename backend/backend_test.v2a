@@ -1,0 +1,76 @@
+//déclaration des variables globaux
+int ivar_global;
+float fvar_global;
+
+int ivect_d1_global[10];
+float fvect_d1_global[5];
+
+int ivect_d2_global[10][10];
+float fvect_d2_global[3][10];
+
+
+//fonction recursive
+int factoriel(int n)
+{
+    int i;
+    int j;
+    if (n == 0)
+	return 1;
+    i = n;
+    i -= 1;
+    j = factoriel(i);
+    j *= n;
+    return j; 
+}
+
+
+void somme_fvect(float t1[3][8], float t2[3][10])
+{
+    int i;
+    i = 3;
+ loop:
+    t1[i] += t2[i];
+    i--;
+    if (i != 0)
+	goto loop;
+}
+int main()
+{
+    int ivar_local;
+    float fvar_local;
+    float fvect_d2_local[3][8];
+
+
+    //appel de la fonction factoriel 
+    ivar_local = factoriel(5); //5!=120
+    print ivar_local; //affiche 120
+
+    //
+    fvect_d2_local[0]++;
+    fvect_d2_local[1]++;
+    fvect_d2_local[1]++;
+    fvect_d2_local[2]++;
+    fvect_d2_local[2]++;
+    fvect_d2_local[2]++;
+    print fvect_d2_local[0];
+    print fvect_d2_local[1];
+    print fvect_d2_local[2];
+    
+    fvect_d2_global[0][0] = 5.6 ;
+    fvect_d2_global[0][1] = 2.4 ;
+    fvect_d2_global[0][2] = 2.4 ;
+    
+    
+    /* print fvect_d2_global[0]; */
+    /* print fvect_d2_global[1]; */
+    /* print fvect_d2_global[2]; */
+
+    /* somme_fvect(fvect_d2_local, fvect_d2_global); */
+    /* print fvect_d2_local[0]; */
+    /* print fvect_d2_local[1]; */
+    /* print fvect_d2_local[2]; */
+
+
+
+    return 0;
+}

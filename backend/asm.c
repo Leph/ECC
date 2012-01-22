@@ -38,7 +38,20 @@ void asm_global_table(variable_table_t* t)
 void asm_global_variable(variable_t *v){
     assert(v != NULL);
     int size = variable_size(v);
-    printf("\t.comm\t%s, %d\n", v->name, size);
+    if (v->dim > 0){
+	int j;
+	for(j=v->dim-1;j>=0;j--) {
+	    size *= v->size_array[j];
+	    if (j == v->dim-1) {
+		size = 16*(size/16) + 16;
+	    }
+	}
+	printf("\t.comm\t%s, %d, %d\n", v->name, size, 16);
+    }
+    else {
+	printf("\t.comm\t%s, %d\n", v->name, size);
+    }
+    
 }
 
 void asm_function_table(function_table_t* t)
@@ -94,6 +107,7 @@ void asm_statement(statement_t* s, variable_table_t* t)
     assert(t != NULL);
     switch (s->type) {
         case LABEL_T:
+	    asm_label(s->label);
             break;
         case EXP_T:
             asm_expression(s->expression, t);
@@ -108,6 +122,12 @@ void asm_statement(statement_t* s, variable_table_t* t)
             asm_block(s->block);
             break;
     }
+}
+
+void asm_label(label_t* l)
+{
+    assert(l != NULL);
+    printf("%s:\n", l);
 }
 
 void asm_expression(expression_t* e, variable_table_t* t)
@@ -130,15 +150,15 @@ void asm_expression(expression_t* e, variable_table_t* t)
         case INC_T:
             if (type_left == INT_T) asm_op_inc_int(e->left, t);
             else if (type_left == FLOAT_T) asm_op_inc_float(e->left, t);
-            else if (type_right == INT_VECTOR_T) asm_op_inc_ivect(e->left, t);
-            else if (type_right == FLOAT_VECTOR_T) asm_op_inc_fvect(e->left, t);
+            else if (type_left == INT_VECTOR_T) asm_op_inc_ivect(e->left, t);
+            else if (type_left == FLOAT_VECTOR_T) asm_op_inc_fvect(e->left, t);
             else assert(0);
             break;
         case DEC_T:
             if (type_left == INT_T) asm_op_dec_int(e->left, t);
             else if (type_left == FLOAT_T) asm_op_dec_float(e->left, t);
-            else if (type_right == INT_VECTOR_T) asm_op_dec_ivect(e->left, t);
-            else if (type_right == FLOAT_VECTOR_T) asm_op_dec_fvect(e->left, t);
+            else if (type_left == INT_VECTOR_T) asm_op_dec_ivect(e->left, t);
+            else if (type_left == FLOAT_VECTOR_T) asm_op_dec_fvect(e->left, t);
             else assert(0);
             break;
         case PRINT_T:

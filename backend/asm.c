@@ -1366,33 +1366,40 @@ void asm_op_norm_float_fvect(unary_expression_t* e_left, unary_expression_t* e_r
     variable_t *v_right = variable_table_search_name(t, e_right->value->identifier);
     assert(v_right != NULL);
     int size = v_right->size_array[v_right->dim-1];
-    printf("\tmovl\t$%d, %%eax\n", size);
+    printf("\tmovl\t$%d, %%eax\n", size-1);
     int number = label_number;
-    label_number++;
-    printf("\tfldz\n");
+    label_number+=2;
+    printf("\tpushl\t$%d\n", 16*((size*4)/16)+16);
+    printf("\tpushl\t$16\n");
+    printf("\tsubl\t$4, %%esp\n");
+    printf("\tmovl\t%%esp, (%%esp)\n");
+    printf("\tcall\tposix_memalign\n");
+    printf("\tmovl\t(%%esp), %%edx\n");
+    printf("\taddl\t$12, %%esp\n");
+    
     printf("L_ECC_%d:\n", number);
     printf("\tmovaps\t(%%ecx), %%xmm0\n");
     printf("\tmulps\t%%xmm0, %%xmm0\n");
-    printf("\tsubl\t$16, %%esp\n");
-    printf("\tmovups\t%%xmm0, 12(%%esp)\n");
-    
-    printf("\tflds\t12(%%esp)\n");
-    printf("\tfaddp\n");
-    printf("\tflds\t8(%%esp)\n");
-    printf("\tfaddp\n");
-    printf("\tflds\t4(%%esp)\n");
-    printf("\tfaddp\n");
-    printf("\tflds\t(%%esp)\n");
-    printf("\tfaddp\n");
-    printf("\taddl\t$16, %%esp\n");
-    printf("\taddl\t$16, %%ebx\n");
+    printf("\tmovups\t%%xmm0, (%%edx)\n"); 
+    printf("\taddl\t$16, %%edx\n");
     printf("\taddl\t$16, %%ecx\n");
     printf("\tsubl\t$4, %%eax\n");
     printf("\tcmp\t$0, %%eax\n");
     printf("\tjg\tL_ECC_%d\n", number);
+    
+    printf("\tmovl\t$%d, %%eax\n", size-1);
+    printf("\tfldz\n");
+    printf("L_ECC_%d:\n", number+1);
+    printf("\tflds\t(%%edx)\n");
+    printf("\tfaddp\n");
+    printf("\taddl\t$4, %%edx\n");
+    printf("\tsubl\t$1, %%eax\n");
+    printf("\tcmp\t$0, %%eax\n");
+    printf("\tjg\tL_ECC_%d\n", number+1);
 
     printf("\tfsqrt\n");
     printf("\tfstps\t%s\n", left);
+
 }
 void asm_op_max_float_fvect(unary_expression_t* e_left, unary_expression_t* e_right, variable_table_t* t)
 {

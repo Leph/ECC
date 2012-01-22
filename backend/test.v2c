@@ -13,20 +13,20 @@ int rec(int a) {
 
 int main() {
 
-    float a[3];
+    float a[4];
     float b;
-    float c;	
-    a[0] = 1.;
-    a[1] = 3.;
-    a[2] = 2.;
-    
 
+    b = 42;
+    
+    a[0] = 1.;
+    a[1] = 0.;
+    a[2] = 1.;
     
     b norm= a;
 
     print a;
-
     print b;
+
     return 0;
 }
 

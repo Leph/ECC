@@ -12,3 +12,4 @@ Pour produire du code assembleur des tests invoquer "make test".
 Pour assembler et lancer les tests invoquer "make run".
 Pour lancer un petit test de performance invoquer "make perf".
 Pour nettoyer invoquer "make clean".
+

@@ -31,7 +31,7 @@ x86, 32 bits.
 Il s'est avéré que le fichier yacc implémentant la grammaire du langage intermédiaire qui était fournie comportait quelques erreurs.
 Plus exactement, la grammaire acceptait des codes qui ne faisait clairement pas partie ni du langage d'entrée, ni du langage intermédiaire.
 Pour ne pas avoir a gérer des erreurs syntaxiques, nous avons choisi de réécrire en grande partie la grammaire 
-pour d'une part, la rendre plus strict, plus cohérente avec la langage intermédiare utilisé ici et d'autre part un peu plus simple à
+pour d'une part, la rendre plus strict, plus cohérente avec la langage intermédiaire utilisé ici et d'autre part un peu plus simple à
 utilisée dans le cadre de l'arbre syntaxique.
 
 \subsection{Utilisation de Lex et Yacc}
@@ -52,12 +52,12 @@ Le fichier ecc.h et ecc.c contiennent respectivement la définition et l'implém
 Les règles sémantiques associés à chaque règle de la grammaire ont alors pour rôle de construire la représentation du code et de le faire
 remonter par l'arbre syntaxique.\\
 
-Notons ici que l'utilisation d'un langage orienté objet aurrai certainement simplifié cette construction fastidieuse.\\
+Notons ici que l'utilisation d'un langage orienté objet aurai certainement simplifié cette construction fastidieuse.\\
 
 Deux opérations importantes sont effectué après la construction de la structures de données et avant la génération du code : 
 le cha\^inage des tables de variables et le calcul des offsets pour chaque variable.
 Il s'agit pour le premier de lier la structure qui nous sert de table de symbole à sa table englobante.
-Pour le deuxième, on calcul par rapport à \%epb, le décalage à effectuer sur la pile pour accéder à la variable donnnée. Positif 
+Pour le deuxième, on calcul par rapport à \%epb, le décalage à effectuer sur la pile pour accéder à la variable donnée. Positif 
 pour les arguments d'une fonction, négatif pour les variables locales.\\
 
 Remarque : Valgrind nous assure que notre compilateur ne génère pas de fuite de mémoire dans notre gestion dynamique des structures.
@@ -70,21 +70,21 @@ Notre protocole d'appel des fonctions est le protocole standard sous Linux :\\
 Appelant :\\
 1 : sauvegarde des registres utilisés\\
 2 : empilement des paramètres sur la pile\\
-3 : appel à call (empillement de l'adresse de retour et saut)\\
+3 : appel à call (empilement de l'adresse de retour et saut)\\
 Appelé :\\
 4 : sauvegarde le frame pointeur courant\\
 5 : allocation d'espace sur la pile pour les variables locales\\
 6 : code ...\\
-7 : depile des variables locales\\
-8 : restore le frame pointer\\
+7 : dépile des variables locales\\
+8 : restaure le frame pointer\\
 9 : appel à ret : dépile l'adresse de retour et jump\\
 Appelant :\\
 10 : dépile les paramètres de la fonctions\\
-11 : restore les registres\\
+11 : restaure les registres\\
 
 \subsection{Gestions des variables et tableaux}
 
-Comme sous entendu précédement, les arguments et variables locales scalaires sont stockées quelque part sur la pile. Leurs position est calculées
+Comme sous entendu précédemment, les arguments et variables locales scalaires sont stockées quelque part sur la pile. Leurs position est calculées
 par rapport à \%ebx, le frame pointer.
 Toutes les variables locales sont déclarées dans la section .data du binaire.
 Les tableaux sont quant à eux alloués sur le tas. Chaque tableau est alloué au début du block (counpound statement) auquel il appartient et est
@@ -98,50 +98,51 @@ compilateur. La principale difficulté est de construire une structure de donné
 
 \subsection{Fonctionnalités implémentées}
 
-Nous avons au cours de ce projet implémenté les fonctionnalités suivante en assembleur :
+Nous avons au cours de ce projet implémenté les fonctionnalités suivantes en assembleur :
 
-Les opération non mixtes suivantes ont été implémenté : 
+Les opérations non mixtes suivantes ont été implémenté :\\
 incrémentation (++), décrémentation ($--$), assignement (=), addition (+=), soustraction (-=), et multiplication (*=) ainsi que la division (/=)
-pour les quatres types INT, FLOAT, INT[], FLOAT[] (même type à gauche et à droite de l'opérateur).
+pour les quatres types INT, FLOAT, INT[], FLOAT[] (même type à gauche et à droite de l'opérateur).\\
 
-Pout tout ces types, il a été également implémenté l'opérateur print affichant la variable sur la sortie standart. Un appel à printf est effectué et 
-la chaine de caractère utilisé pour le formatage est stocké dans la section data du binaire.
+Pour tout ces types, il a été également implémenté l'opérateur print affichant la variable sur la sortie standard. Un appel à printf est effectué et 
+la chaine de caractère utilisée pour le formatage est stockée dans la section data du binaire.\\
 
-Pour le type INT, les instructions standart x86 (addl, subl, imull) ont été utilisées. Pour ce qui est des nombre flottants, nous avons dû nous
+Pour le type INT, les instructions standard x86 (addl, subl, imull) ont été utilisées. Pour ce qui est des nombres flottants, nous avons dû nous
 pencher sur la documentation du FPU (The Art of Assembly, chapter 13 et 14) (flds, fstps, faddp, fsubps, fmulp).
-Comme nous l'avons dit, les instructions SSE pour être efficace (movaps à la place de movups) nécessite des adresses mémoire alignées.
+Comme nous l'avons dit, les instructions SSE pour être efficaces (movaps à la place de movups) nécessites des adresses mémoires alignées.\\
 
-Deux instrutions de conversion ont été écrit. (int = float) et (float = int) convertissent les entier en flottant et réciproquement à l'aide
-de opérations effectuer par le FPU (filds et fists) (en ommettant le choix du mode d'arrondi grâce au control register).
+Deux instructions de conversion ont été écrit. (int = float) et (float = int) convertissent les entiers en flottants et réciproquement à l'aide
+d'opérations effectuées par le FPU (filds et fists) (en omettant le choix du mode d'arrondi grâce au control register).\\
 
-Nous avons comme demandé également implémenté quelques instructions mixte scalaire - vecteurs tel que :
+Nous avons comme demandé également implémenté quelques instructions mixte scalaire - vecteurs tel que :\\
 (int += int vecteur, int *= int vecteur, float += float vecteur et float *= float vecteur) effectuant somme et produit de tout les éléments
 d'un même vecteur. Notons par ailleurs que le produit scalaire entre deux vecteurs peut être décomposé en opérations deux adresses 
-(mise aux carré des éléments du vecteur puis somme).
+(mise au carré des éléments du vecteur puis somme).\\
 
-L'opérateur sqrt float, calcul la racine carré d'un flottant.
+L'opérateur sqrt float, calcul la racine carré d'un flottant.\\
 
 Enfin, trois autres opérateur vectoriel ont été introduit et codé conformément au sujet : min=, max= et norm= calculant respectivement
-le minimun, le maximum et la norme du vecteur.
+le minimum, le maximum et la norme du vecteur.\\
 
-La récursivité des fonctions ne semble pas poser pas de problème particulier.
+La récursivité des fonctions ne semble pas poser pas de problème particulier.\\
 
-Les opération de conditions (==, <, >, <=, >=, !) n'ont été implémenté que sur les entiers mais peuvent relativement simplement être étendu
-aux flotants à l'aide des instuctions proposés par le FPU.
+Les opérations de conditions (==, <, >, <=, >=, !) n'ont été implémenté que sur les entiers mais peuvent relativement simplement être étendues
+aux flottants à l'aide des instructions proposées par le FPU.\\
 
-L'écriture de ce code a lui aussi été assez fastidieux et aurrait été grandement allégé par une structure de donnée plus réfléchie.
+L'écriture de ce code a lui aussi été assez fastidieux et aurai été grandement allégé par une structure de donnée plus réfléchie.
 
 \section{Difficultés rencontrés}
 \begin{itemize}
-\item Utilisation Lex/Yacc: leurs fonctionement avancé n'est pas totalement indiqué lors des TD.
-\item Utilisation FPU et conversion entier - flottant: le fonctionnement du FPU, de ses registres formant une pile doit être assimilé.
-\item Difficulter de déboguage: il s'est avéré que le débogage du binaire produit est long et pénible. Même avec des outils indispensable tel que gdb ou valgrind, cette opération reste difficile. Pire encore, nous avons été confronté à certains problèmes où gdb et valgrind ne possédait
-pas le même résultat. (Vagrind à recoder des fonctions tel que malloc induisant des comportements ardu à déméler).
+\item Utilisation Lex/Yacc: leurs fonctionnement avancé n'est pas totalement indiqué lors des TDs.
+\item Utilisation FPU et conversion entier - flottant: le fonctionnement du FPU, de ses registres formant une pile doit être compris.
+\item Difficulté de déboguage: il s'est avéré que le débogage du binaire produit est long et pénible. Même avec des outils indispensables tel que gdb ou valgrind, cette opération reste difficile. Pire encore, nous avons été confronté à certains problèmes où gdb et valgrind ne possédait
+pas le même résultat. (Vagrind à recoder des fonctions tel que malloc induisant des comportements ardu à démêler).
 \item Manque de structuration du code
 \end{itemize}
+
 \section{Tests et Usage}
 
-Voici les commandes inclus dans notre makefile, qui permettent de tester notre backend.
+Voici les commandes incluent dans notre makefile, qui permettent de tester notre backend.
 \begin{itemize}
 \item Pour ne compiler que le code source "make".
 \item Pour produire du code assembleur des tests invoquer "make test".
@@ -152,13 +153,12 @@ Voici les commandes inclus dans notre makefile, qui permettent de tester notre b
 \section{Conclusion}
 
 Les opérations matricielles n'ont pas été traitées. Contrairement à gcc, nous n'avons pas géré l'alignement de la pile qui d'après internet
-améliore considérablement les performances sur l'architecture que nous considérons. Bien que quelque assert ont été posés, le backend 
-suppose assez lagement que le code d'entré est correcte.
+améliore considérablement les performances sur l'architecture que nous considérons. Bien que quelquez assert ont été posés, le backend 
+suppose assez largement que le code d'entré est correcte.\\
 
-Loin d'être simple, l'écriture d'un compilateur nécessite une forte connaissance technique de l'architecture des processeurs cible.  mais 
+Loin d'être simple, l'écriture d'un compilateur nécessite une forte connaissance technique de l'architecture des processeurs cible. De plus, 
 également, nous nous somme rendu compte qu'un code efficace, clair et modulable demandait un travail très important du point de vue du
 génie logiciel et de la structuration des données manipulé.
-L'assembleur est certainememnt un art et qui demande une quantité non négligeable de patience et de zenitude.
 
 \end{document}
 

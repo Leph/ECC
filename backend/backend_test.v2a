@@ -40,6 +40,7 @@ int main()
     int ivar_local;
     float fvar_local;
     float fvect_d2_local[3][8];
+    float fvect_d3_local[1000][1000][1000];
     float max;
     float min;
     float norm;
@@ -80,7 +81,7 @@ int main()
     print fvect_d2_global[0];
     print fvect_d2_global[1];
     print fvect_d2_global[2];
-    fvect_d2_local[1] += fvect_d2_global[1];
+    // fvect_d2_local[1] += fvect_d2_global[1];
     
     print 2;//separation de l'affichage    
     

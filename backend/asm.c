@@ -238,6 +238,7 @@ char* asm_unary_expression(unary_expression_t* e, variable_table_t* t)
     static char code[1024];
     char value[1024];
     variable_t* v;
+    variable_t* v2;
     int i;
     switch (e->type) {
         case VALUE_T:
@@ -251,6 +252,7 @@ char* asm_unary_expression(unary_expression_t* e, variable_table_t* t)
             for (i=0;i<e->arguments->size;i++) {
                     assert(e->arguments->values[i]->const_int<v->size_array[i]);
             }
+	    printf("\tmovl\t%s, %%ebx\n", value);
             int offset = 0;
             for (i=0;i<e->arguments->size;i++) {
                 int j;
@@ -261,10 +263,22 @@ char* asm_unary_expression(unary_expression_t* e, variable_table_t* t)
                         size = 16*(size/16) + 16;
                     }
                 }
-                offset += size*e->arguments->values[i]->const_int;
-            }
-            printf("\tmovl\t%s, %%ebx\n", value);
-	    printf("\taddl\t$%d, %%ebx\n", offset);
+		if (e->arguments->values[i]->type == CONST_INT_T) {
+		    offset = size*e->arguments->values[i]->const_int;
+		    printf("\taddl\t$%d, %%ebx\n", offset);
+		}
+		else if (e->arguments->values[i]->type == IDENTIFIER_T) {
+		    v2 = variable_table_search_name(t, e->arguments->values[i]->identifier);
+		    assert(v2 != NULL);
+		    assert(v2->type == INT_T);
+		    printf("\tmovl\t%d(%%ebp), %%edx\n", v2->offset);
+		    printf("\timull\t$4, %%edx\n");
+		    printf("\taddl\t%%edx, %%ebx\n");
+		}
+		else {
+		    assert(0);   
+		}
+	    }
             type_t type = asm_get_type(e, t);
             if (type == INT_T || type == FLOAT_T) {
                 sprintf(code, "(%%ebx)");

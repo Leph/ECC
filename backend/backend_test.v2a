@@ -1,4 +1,4 @@
-//déclaration des variables globaux
+//déclaration des variables globales
 int ivar_global;
 float fvar_global;
 
@@ -34,6 +34,20 @@ void somme_fvect(float t1[3][8], float t2[3][10])
     if (i < 3)
 	goto loop;
 }
+
+void f()
+{
+    int d;
+    d = 5;
+    if ( d > 4) {
+	int c;
+	c = 4;
+	d += c;
+    }
+    print d;
+}
+
+
 int main()
 {
     int ivar_local;
@@ -62,8 +76,12 @@ int main()
     //appel de la fonction factoriel
     ivar_local = factoriel(5); //5!=120
     print ivar_local; //affiche 120
+    
 
-    /* print 0;//separation de l'affichage */
+    f();//affiche 9
+
+    
+    print 0;//separation de l'affichage 
     
     //initialisation des vecteurs
     ivect_d1_local++;
@@ -102,7 +120,10 @@ int main()
    
     print 3;//separation de l'affichage
 
+    
+    
     //multiplication vecteur
+    
     print fvect_d2_local[2];
     print fvect_d2_local[1];
     fvect_d2_local[2] *= fvect_d2_local[1];
@@ -112,7 +133,7 @@ int main()
     ivect_d1_local *= ivect_d1_local2;
     print ivect_d1_local;
     
-
+    
     print 4;//separation de l'affichage
     
     //division vecteur
@@ -120,12 +141,12 @@ int main()
     print fvect_d2_local[1];
     fvect_d2_local[2] /= fvect_d2_local[1];
     print fvect_d2_local[2];
-
+    
     print ivect_d1_local;
     print ivect_d1_local2;
     ivect_d1_local /= ivect_d1_local2;
     print ivect_d1_local;
-
+    
 
     print 5;//separation de l'affichage
     

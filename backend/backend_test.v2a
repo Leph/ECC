@@ -39,7 +39,7 @@ int main()
     int ivar_local;
     float fvar_local;
     float fvect_d2_local[3][8];
-    float fvect_d3_local[1000][1000][1000];
+    //float fvect_d3_local[1000][1000][1000];
     float max;
     float min;
     float norm;

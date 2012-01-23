@@ -1,25 +1,8 @@
 
-
-int rec(int a) {
-    int b;
-    int c;
-    if (a == 0) {
-        return 1;
-    }
-    b = a;
-    b--;
-    c = rec(b);
-    c *= a;
-    return c;
-}
-
-
 int main() {
 
-    float a[5];    
+    float a[4];
     float b;
-    int i;
-    // float fvect_d2_local[3][8];
     b = 42;
     
     a[0] = 2.;
@@ -27,19 +10,6 @@ int main() {
     a[2] = 2.;
     a[3] = 2.;
 
-
-    
-
-    /* fvect_d2_local[0]++; */
-    /* fvect_d2_local[1]++; */
-    /* fvect_d2_local[1]++; */
-    /* fvect_d2_local[2]++; */
-    /* fvect_d2_local[2]++; */
-    /* fvect_d2_local[2]++; */
-    /* print fvect_d2_local[0]; */
-    /* print fvect_d2_local[1]; */
-    /* print fvect_d2_local[2]; */
-    /* print 0; */
     print a;
     print b;
     b norm= a;

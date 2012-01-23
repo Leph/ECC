@@ -272,7 +272,7 @@ char* asm_unary_expression(unary_expression_t* e, variable_table_t* t)
 		    assert(v2 != NULL);
 		    assert(v2->type == INT_T);
 		    printf("\tmovl\t%d(%%ebp), %%edx\n", v2->offset);
-		    printf("\timull\t$4, %%edx\n");
+		    printf("\timull\t$%d, %%edx\n", size);
 		    printf("\taddl\t%%edx, %%ebx\n");
 		}
 		else {
@@ -1409,7 +1409,7 @@ void asm_op_norm_float_fvect(unary_expression_t* e_left, unary_expression_t* e_r
     label_number+=2;
     printf("\tpushl\t$%d\n", 16*((size*4)/16)+16);
     //printf("\tpushl\t$16\n");
-    printf("\tsubl\t$4, %%esp\n");
+    //printf("\tsubl\t$4, %%esp\n");
     //printf("\tmovl\t%%esp, (%%esp)\n");
     printf("\tcall\tmalloc\n");
     printf("\tmovl\t%%eax, %%edx\n");
@@ -1420,6 +1420,7 @@ void asm_op_norm_float_fvect(unary_expression_t* e_left, unary_expression_t* e_r
     printf("\tmovl\t$%d, %%eax\n", size);
     
     printf("L_ECC_%d:\n", number);
+    
     printf("\tmovaps\t(%%ecx), %%xmm0\n");
     printf("\tmulps\t%%xmm0, %%xmm0\n");
     printf("\tmovups\t%%xmm0, (%%edx)\n"); 

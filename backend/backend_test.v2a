@@ -8,7 +8,6 @@ float fvect_d1_global[5];
 int ivect_d2_global[10][10];
 float fvect_d2_global[3][10];
 
-float fvect_d3_global[1000][1000][1000];
 
 //fonction recursive
 int factoriel(int n)
@@ -45,21 +44,18 @@ int main()
     float min;
     float norm;
     float somme;
+    float produit;
     float racine;
-
+    
     /* float f; */
     /* f = 0.; */
-    /* f -= 5.5;  */
+    /* f -= 5.5; */
 
-    /* int k; */
-    /* k = 1; */
-    /* k -= 42; */
-
-    //appel de la fonction factoriel 
+    //appel de la fonction factoriel
     ivar_local = factoriel(5); //5!=120
     print ivar_local; //affiche 120
 
-    print 0;//separation de l'affichage
+    /* print 0;//separation de l'affichage */
     
     //initialisation des vecteurs
     fvect_d2_local[0]++;
@@ -81,18 +77,19 @@ int main()
     print fvect_d2_global[0];
     print fvect_d2_global[1];
     print fvect_d2_global[2];
-    // fvect_d2_local[1] += fvect_d2_global[1];
     
     print 2;//separation de l'affichage    
     
     somme_fvect(fvect_d2_local, fvect_d2_global);
+    
+    
     print fvect_d2_local[0];
     print fvect_d2_local[1];
     print fvect_d2_local[2];
    
     print 3;//separation de l'affichage
 
-    //multiplication
+    //multiplication vecteur
     print fvect_d2_local[2];
     print fvect_d2_local[1];
     fvect_d2_local[2] *= fvect_d2_local[1];
@@ -100,13 +97,14 @@ int main()
 
     print 4;//separation de l'affichage
     
-    //division
+    //division vecteur
     print fvect_d2_local[2];
     print fvect_d2_local[1];
     fvect_d2_local[2] /= fvect_d2_local[1];
     print fvect_d2_local[2];
 
     print 5;//separation de l'affichage
+    
     fvect_d1_global[0] = 5.0;
     fvect_d1_global[1] = 1.0;
     fvect_d1_global[2] = 0.05;
@@ -117,27 +115,36 @@ int main()
     print max;
     
     print 6;//separation de l'affichage
+
     print fvect_d1_global;
     min min= fvect_d1_global; //0.05
     print min;
     
     print 7;//separation de l'affichage
+    
     print fvect_d1_global;
     somme += fvect_d1_global; //89.05
     print somme;
     
     print 8;//separation de l'affichage
+    
+    print fvect_d1_global;
+    produit *= fvect_d1_global; //430.5
+    print produit;
+    
+
+    print 9;//separation de l'affichage
    
     racine = 9.0;
     sqrt racine; //3.0
     print racine;
     
-    print 9;//separation de l'affichage
+    print 10;//separation de l'affichage
     
     norm norm= fvect_d2_local[0]; //sqrt(8)
     print norm;
 
-    print 10;//separation de l'affichage
+    print 11;//separation de l'affichage
 
     return 0;
 }

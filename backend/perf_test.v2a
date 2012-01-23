@@ -1,0 +1,22 @@
+int main()
+{
+    int tab1[100000000]; 
+    int tab2[100000000] ;
+    int i;
+    int s;
+
+    s = 0;
+    i = 0;
+    tab1++;
+    tab2++;
+    tab1 += tab2;
+
+ loop:
+    s += tab1[i];
+    i++;
+    if (i < 10000000)
+	goto loop;
+    
+
+    return 0;
+}

@@ -3,7 +3,7 @@ int main()
     float tab1[100000000]; 
     float tab2[100000000] ;
     int i;
-    int s;
+    float s;
 
     s = 0;
     i = 0;

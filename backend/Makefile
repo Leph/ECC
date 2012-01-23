@@ -29,7 +29,7 @@ run: backend
 perf: backend
 	./backend perf_test.v2a > perf_test.s
 	gcc  perf_test.s -o perf_test_ecc 
-	gcc perf_test.c -p perf_test_gcc
+	gcc perf_test.c -o perf_test_gcc
 	echo ecc; time ./perf_test_ecc; echo gcc; time perf_test_gcc
 
 .PHONY: test run clean perf

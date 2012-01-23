@@ -1,7 +1,7 @@
 int main()
 {
-    int tab1[100000000]; 
-    int tab2[100000000] ;
+    float tab1[100000000]; 
+    float tab2[100000000] ;
     int i;
     int s;
 

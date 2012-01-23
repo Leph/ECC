@@ -3,8 +3,8 @@
 
 int main()
 {
-    int *tab1 = malloc(sizeof(int)*SIZE);
-    int *tab2 = malloc(sizeof(int)*SIZE);
+    float *tab1 = malloc(sizeof(int)*SIZE);
+    float *tab2 = malloc(sizeof(int)*SIZE);
 
     int i;
     int s=0;

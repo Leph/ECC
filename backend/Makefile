@@ -15,7 +15,7 @@ backend.c:backend.y
 	$(LEX) -o $@ $^
 
 clean:
-	rm -f backend.c scanner_backend.c lex.yy.c
+	rm -f backend.c scanner_backend.c lex.yy.c perf_test.s
 	rm -f backend.tab.h backend.tab.c backend backend_test backend_test.s
 
 test: backend
@@ -26,5 +26,11 @@ run: backend
 	gcc -Wall backend_test.s -o backend_test -g -ggdb
 	./backend_test
 
-.PHONY: test run clean
+perf: backend
+	./backend perf_test.v2a > perf_test.s
+	gcc  perf_test.s -o perf_test_ecc 
+	gcc perf_test.c -p perf_test_gcc
+	echo ecc; time ./perf_test_ecc; echo gcc; time perf_test_gcc
+
+.PHONY: test run clean perf
 

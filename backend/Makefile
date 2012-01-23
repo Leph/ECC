@@ -15,8 +15,8 @@ backend.c:backend.y
 	$(LEX) -o $@ $^
 
 clean:
-	rm -f backend.c scanner_backend.c
-	rm -f backend.tab.h backend
+	rm -f backend.c scanner_backend.c lex.yy.c
+	rm -f backend.tab.h backend.tab.c backend backend_test backend_test.s
 
 test: backend
 	./backend backend_test.v2a

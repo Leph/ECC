@@ -1,0 +1,13 @@
+Projet C Compiler (ECC) Enseirb-Matmeca 2011-2012
+                Partie Backend
+
+Auteurs:
+	Lun Jiang
+	Quentin Rouxelcd		
+
+
+Commandes makefile:
+Pour ne compiler que le code source "make".
+Pour produire du code assembleur des tests invoquer "make test".
+Pour assembler et lancer les tests invoquer "make run".
+Pour nettoyer invoquer "make clean".

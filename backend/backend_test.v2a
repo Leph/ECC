@@ -39,18 +39,26 @@ int main()
     int ivar_local;
     float fvar_local;
     float fvect_d2_local[3][8];
-    //float fvect_d3_local[1000][1000][1000];
+    float fvect_d3_local[500][1000][1000];
+    int ivect_d1_local[5];
+    int ivect_d1_local2[8];
     float max;
     float min;
     float norm;
     float somme;
     float produit;
     float racine;
+    float b;
     
-    /* float f; */
-    /* f = 0.; */
-    /* f -= 5.5; */
-
+    b -= 42.;//-42.0
+    print b;
+    b *= 42.;//-1764.0
+    print b;
+    b /= 42.;//-42.0
+    print b;
+    b += 42.;//0.0
+    print b;
+    
     //appel de la fonction factoriel
     ivar_local = factoriel(5); //5!=120
     print ivar_local; //affiche 120
@@ -58,6 +66,11 @@ int main()
     /* print 0;//separation de l'affichage */
     
     //initialisation des vecteurs
+    ivect_d1_local++;
+    ivect_d1_local++;
+    ivect_d1_local++;
+    ivect_d1_local2++;
+    ivect_d1_local2++;
     fvect_d2_local[0]++;
     fvect_d2_local[1]++;
     fvect_d2_local[1]++;
@@ -94,6 +107,11 @@ int main()
     print fvect_d2_local[1];
     fvect_d2_local[2] *= fvect_d2_local[1];
     print fvect_d2_local[2];
+    print ivect_d1_local;
+    print ivect_d1_local2;
+    ivect_d1_local *= ivect_d1_local2;
+    print ivect_d1_local;
+    
 
     print 4;//separation de l'affichage
     
@@ -102,6 +120,12 @@ int main()
     print fvect_d2_local[1];
     fvect_d2_local[2] /= fvect_d2_local[1];
     print fvect_d2_local[2];
+
+    print ivect_d1_local;
+    print ivect_d1_local2;
+    ivect_d1_local /= ivect_d1_local2;
+    print ivect_d1_local;
+
 
     print 5;//separation de l'affichage
     
@@ -136,11 +160,13 @@ int main()
     print 9;//separation de l'affichage
    
     racine = 9.0;
+    print racine;
     sqrt racine; //3.0
     print racine;
     
     print 10;//separation de l'affichage
     
+    print fvect_d2_local[0];
     norm norm= fvect_d2_local[0]; //sqrt(8)
     print norm;
 

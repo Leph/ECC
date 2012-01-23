@@ -746,7 +746,9 @@ void asm_op_add_float_float(unary_expression_t* e_left, unary_expression_t* e_ri
     strcpy(left, asm_unary_expression(e_left, t));
     strcpy(right, asm_unary_expression(e_right, t));
     printf("\tflds\t%s\n", left);
-    printf("\tflds\t%s\n", right);
+    printf("\tpushl\t%s\n", right);
+    printf("\tflds\t(%%esp)\n");
+    printf("\taddl\t$4, %%esp\n");
     printf("\tfaddp\n");
     printf("\tfstps\t%s\n", left);
 }
@@ -759,7 +761,9 @@ void asm_op_sub_float_float(unary_expression_t* e_left, unary_expression_t* e_ri
     char right[1024];
     strcpy(left, asm_unary_expression(e_left, t));
     strcpy(right, asm_unary_expression(e_right, t));
-    printf("\tflds\t%s\n", right);
+    printf("\tpushl\t%s\n", right);
+    printf("\tflds\t(%%esp)\n");
+    printf("\taddl\t$4, %%esp\n");
     printf("\tflds\t%s\n", left);
     printf("\tfsubp\n");
     printf("\tfstps\t%s\n", left);
@@ -774,7 +778,9 @@ void asm_op_mul_float_float(unary_expression_t* e_left, unary_expression_t* e_ri
     strcpy(left, asm_unary_expression(e_left, t));
     strcpy(right, asm_unary_expression(e_right, t));
     printf("\tflds\t%s\n", left);
-    printf("\tflds\t%s\n", right);
+    printf("\tpushl\t%s\n", right);
+    printf("\tflds\t(%%esp)\n");
+    printf("\taddl\t$4, %%esp\n");
     printf("\tfmulp\n");
     printf("\tfstps\t%s\n", left);
 }
@@ -788,8 +794,10 @@ void asm_op_div_float_float(unary_expression_t* e_left, unary_expression_t* e_ri
     char right[1024];
     strcpy(left, asm_unary_expression(e_left, t));
     strcpy(right, asm_unary_expression(e_right, t));
+    printf("\tpushl\t%s\n", right);
+    printf("\tflds\t(%%esp)\n");
+    printf("\taddl\t$4, %%esp\n");
     printf("\tflds\t%s\n", left);
-    printf("\tflds\t%s\n", right);
     printf("\tfdivp\n");
     printf("\tfstps\t%s\n", left);
 }
